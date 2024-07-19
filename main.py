@@ -12,38 +12,18 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-# import redis.asyncio as redis
 import uvicorn
 
 from src.models.models import User
-from src.routes import photos
 from src.database.db import get_db
 from src.conf.config import config
-from src.routes import auth, users, comments, seed, ratings
+from src.routes import auth, users
 from src.services.auth import auth_service
 from src.conf import messages
 
 
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     if not config.REDIS_PASSWORD:
-#         config.REDIS_PASSWORD = None
-
-#     r = await redis.Redis(
-#         host=config.REDIS_DOMAIN,
-#         port=int(config.REDIS_PORT),
-#         password=config.REDIS_PASSWORD,  # з ним в мене зависає. чи треба тут пароль? - fix config.REDIS_PASSWORD = None
-#         encoding="utf-8",
-#         decode_responses=True,
-#     )
-
-#     delay = await FastAPILimiter.init(r)
-#     yield delay
-
-
 # start = True
 
-# app = FastAPI(lifespan=lifespan)
 app = FastAPI()
 
 origins = ["*"]
@@ -96,15 +76,10 @@ app.mount("/docs", StaticFiles(directory=static_directory), name="docs")
 image_directory = BASE_DIR.joinpath("templates").joinpath("img")
 app.mount("/img", StaticFiles(directory=image_directory), name="image")
 
-
 app.mount("/static", StaticFiles(directory=BASE_DIR / "src" / "static"), name="static")
 
 app.include_router(auth.auth_router, prefix="/api")
 app.include_router(users.router, prefix="/api")
-# app.include_router(photos.router, prefix="/api")
-# app.include_router(comments.router, prefix="/api")
-# app.include_router(ratings.router, prefix="/api")
-# app.include_router(seed.router, prefix="")
 
 
 # @app.get("/")

@@ -15,7 +15,6 @@ from src.conf import messages
 from src.conf.config import config
 from src.services.roles import RoleAccess
 from src.repository import users as repositories_users
-from src.repository.photos import init_cloudinary
 
 
 router = APIRouter(prefix="/users", tags=["users"])

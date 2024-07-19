@@ -7,7 +7,7 @@ from libgravatar import Gravatar
 
 from src.conf import messages
 from src.database.db import get_db
-from src.models.models import Role, User, Photo
+from src.models.models import Role, User
 from src.schemas.user import UserSchema, UserUpdateSchema
 
 
@@ -43,7 +43,8 @@ async def create_user(body: UserSchema, db: AsyncSession = Depends(get_db)):
     except Exception as err:
         print(err)
 
-    new_user = User(**body.model_dump(), avatar=avatar)
+    # new_user = User(**body.model_dump(), avatar=avatar)
+    new_user = User(**body.model_dump())
     db.add(new_user)
     await db.commit()
     await db.refresh(new_user)

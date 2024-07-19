@@ -1,5 +1,3 @@
-from src.conf.constants import RATING_MIN_VALUE, RATING_MAX_VALUE
-
 ACCOUNT_EXIST = "Account already exists!"
 EMAIL_NOT_CONFIRMED = "Email not confirmed!"
 EMAIL_ALREADY_CONFIRMED = "Your email is already confirmed"
@@ -21,20 +19,3 @@ RECEIVED_CONFIRMATION = "We received confirmation for update password"
 PASSWORD_UPDATE_SUCCESSFULLY = "Password was updated successfully!"
 DIFFERENT_PASSWORD = "Passwords are not the same"
 LOGOUT = "User is logout"
-RATING_VALUE_INCORRECT = (
-    f"Rating must be between {RATING_MIN_VALUE} and {RATING_MAX_VALUE}"
-)
-SOMETHING_WRONG = "Something went wrong!"
-PHOTO_SUCCESSFULLY_ADDED = "Photo successfully added!"
-TAG_SUCCESSFULLY_ADDED = "Tag successfully added!"
-PHOTO_SUCCESSFULLY_DELETED = "Photo successfully deleted!"
-NO_PHOTO_BY_ID = "Not found photo by this ID"
-
-COMMENT_NOT_FOUND = "Comments not found"
-YOU_CAN_NOT_EDIT_COMMENT = "You can not edit this comment"
-YOU_CAN_NOT_DELETE_COMMENT = "You can not delete this comment"
-ERROR_UPDATING_COMMENT = "Error updating comment"
-PHOTO_NOT_FOUND = "Photo not found"
-RATING_NOT_FOUND = "Rating not found"
-RATING_ALREADY_SET = "You already set rating for this photo"
-RATING_OWN_PHOTO = "You can not set rating for own photo"
