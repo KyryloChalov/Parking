@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from fastapi.responses import JSONResponse
-import redis
+# import redis
 from fastapi import Depends, HTTPException, status
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
@@ -20,12 +20,14 @@ class Auth:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     SECRET_KEY = config.SECRET_KEY_JWT
     ALGORITHM = config.ALGORITHM
-    cache = redis.Redis(
-        host=config.REDIS_DOMAIN,
-        port=config.REDIS_PORT,
-        db=0,
-        password=config.REDIS_PASSWORD,
-    )
+
+    # TODO прибрати всі згадки про cache - їх 6 штук в коді (+2 в коментах)
+    # cache = redis.Redis(
+    #     host=config.REDIS_DOMAIN,
+    #     port=config.REDIS_PORT,
+    #     db=0,
+    #     password=config.REDIS_PASSWORD,
+    # )
 
     def verify_password(self, plain_password, hashed_password):
         return self.pwd_context.verify(plain_password, hashed_password)

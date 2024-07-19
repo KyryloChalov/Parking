@@ -24,9 +24,9 @@ class Settings(BaseSettings):
     MAIL_PORT: int
     MAIL_SERVER: str
 
-    REDIS_DOMAIN: str
-    REDIS_PORT: int
-    REDIS_PASSWORD: str | None
+    # REDIS_DOMAIN: str
+    # REDIS_PORT: int
+    # REDIS_PASSWORD: str | None
 
     CLOUDINARY_NAME: str
     CLOUDINARY_API_KEY: str
