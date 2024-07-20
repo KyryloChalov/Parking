@@ -40,6 +40,7 @@ qrcode = "^7.4.2"
 
 [tool.poetry.group.dev.dependencies]
 sphinx = "^7.2.6"
+ipykernel = "^6.29.5"
 
 
 [tool.poetry.group.test.dependencies]
