@@ -19,7 +19,7 @@ from src.models.models import User
 # from src.routes import photos
 from src.database.db import get_db
 from src.conf.config import config
-from src.routes import auth, users#, comments, seed, ratings
+from src.routes import auth, users
 from src.services.auth import auth_service
 from src.conf import messages
 
@@ -54,30 +54,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# @app.middleware("http")
-# async def test(requests: Request, call_next: Callable):
-#     # token: Annotated[str, Depends(auth_service.oauth2_scheme)],
-#     global start
-#     if start:
-#         print("Something")
-#         start = False
-#     else:
-#         ban_tocken = auth_service.cache.get("ban_token")
-#         if ban_tocken is not None:
-#             print(ban_tocken)
-#             logout_user = auth_service.cache.get(user.username)
-#             print(token)
-#             if logout_user:
-#                 logout_user = pickle.loads(logout_user)
-#                 print(logout_user)
-#                 if logout_user == token:
-#                     return JSONResponse(
-#                         status_code=status.HTTP_403_FORBIDDEN,
-#                         content={"detail": messages.LOGOUT},
-#                     )
-#     response = await call_next(requests)
-#     return response
 
 BASE_DIR = Path(__file__).parent
 templates = Jinja2Templates(directory=BASE_DIR / "templates")

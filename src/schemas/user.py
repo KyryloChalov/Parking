@@ -31,38 +31,35 @@ class UserUpdateSchema(BaseModel):
     
 class UserChangeRole(BaseModel):
     role: Role
-    banned: bool
     updated_at: datetime = Field(default=datetime.now())
    
 
 class UserResponse(BaseModel):
-    id: uuid.UUID
+    id: int
     name: str | None
     username: str
     email: EmailStr
-    avatar: str | None
     role: Role
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)  # noqa
     
-class UserResponseAvatar(BaseModel):
-    id: uuid.UUID
-    username: str
-    email: EmailStr
-    avatar: str | None
-    role: Role
+# class UserResponseAvatar(BaseModel):
+#     id: int
+#     username: str
+#     email: EmailStr
+#     avatar: str | None
+#     role: Role
 
-    model_config = ConfigDict(from_attributes=True)  # noqa
+#     model_config = ConfigDict(from_attributes=True)  # noqa
     
 class UserChangeRoleResponse(UserResponse):
     role: Role
-    banned: bool
     updated_at: datetime
 
 class AboutUser(UserResponse):
-    num_photos: int
-
+    ...
+    # num_photos: int
 
 class TokenSchema(BaseModel):
     access_token: str

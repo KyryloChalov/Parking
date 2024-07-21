@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "Imagine"
+name = "Parking"
 version = "0.1.0"
-description = "FastAPI Learning"
+description = "DataScience Recognition licence plate"
 authors = ["1Oleksandr <kondratiuk.ai@gmail.com>"]
 license = "MIT"
 readme = "README.md"

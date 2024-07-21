@@ -1,8 +1,8 @@
-"""change ondelete cascade
+"""del relationship
 
-Revision ID: 5271c741f9f2
-Revises: 836da504702b
-Create Date: 2024-03-25 09:52:52.440408
+Revision ID: de3d211725cb
+Revises: a0a0ae85f3b1
+Create Date: 2024-07-21 13:37:34.515255
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '5271c741f9f2'
-down_revision: Union[str, None] = '836da504702b'
+revision: str = 'de3d211725cb'
+down_revision: Union[str, None] = 'a0a0ae85f3b1'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
