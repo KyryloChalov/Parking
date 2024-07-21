@@ -98,10 +98,6 @@ async def login(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=messages.EMAIL_NOT_CONFIRMED,
         )
-    if user.banned:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail=messages.USER_FORBIDDEN
-        )
     if not auth_service.verify_password(body.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_PASSWORD

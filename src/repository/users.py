@@ -1,4 +1,4 @@
-import uuid
+# import uuid
 
 from fastapi import Depends, HTTPException, status
 from sqlalchemy import select, func
@@ -7,7 +7,7 @@ from libgravatar import Gravatar
 
 from src.conf import messages
 from src.database.db import get_db
-from src.models.models import Role, User#, Photo
+from src.models.models import Role, User
 from src.schemas.user import UserSchema, UserUpdateSchema
 
 
@@ -36,14 +36,14 @@ async def create_user(body: UserSchema, db: AsyncSession = Depends(get_db)):
     :return: A user object, which is a sqlalchemy model
     :doc-author: Trelent
     """
-    avatar = None
-    try:
-        g = Gravatar(body.email)
-        avatar = g.get_image()
-    except Exception as err:
-        print(err)
+    # avatar = None
+    # try:
+    #     g = Gravatar(body.email)
+    #     avatar = g.get_image()
+    # except Exception as err:
+    #     print(err)
 
-    new_user = User(**body.model_dump(), avatar=avatar)
+    new_user = User(**body.model_dump())
     db.add(new_user)
     await db.commit()
     await db.refresh(new_user)
@@ -134,23 +134,23 @@ async def get_user_by_username(username: str, db: AsyncSession):
     user = user.scalar_one_or_none()
     return user
 
-async def get_info_by_username(username: str, db: AsyncSession):
-    user = await get_user_by_username(username, db)
-    if user:
-        statement = select(func.count()).select_from(Photo).filter_by(user_id=user.id)
-        num_photos: int = await db.execute(statement)
-        num_photos = num_photos.scalar()
-        return user, num_photos
-    else:
-        return user, None
+# async def get_info_by_username(username: str, db: AsyncSession):
+#     user = await get_user_by_username(username, db)
+#     if user:
+#         statement = select(func.count()).select_from(Photo).filter_by(user_id=user.id)
+#         num_photos: int = await db.execute(statement)
+#         num_photos = num_photos.scalar()
+#         return user, num_photos
+#     else:
+#         return user, None
 
-async def update_user(user_id: uuid.UUID, body: UserUpdateSchema, db: AsyncSession, current_user: User):
+async def update_user(user_id: int, body: UserUpdateSchema, db: AsyncSession, current_user: User):
     stmt = select(User).filter_by(id=user_id)
     user = await db.execute(stmt)
     user = user.scalar_one_or_none()
     print(user.id)
     print(current_user.id)
-    if user.id == current_user.id or current_user.role == Role.admin:
+    if current_user.role == Role.admin:
         user.name = body.name
         user.username = body.username
         user.email = body.email
@@ -162,7 +162,7 @@ async def update_user(user_id: uuid.UUID, body: UserUpdateSchema, db: AsyncSessi
         print(messages.USER_NOT_HAVE_PERMISSIONS)
         return user
     
-async def change_user_role(user_id: uuid.UUID, body: UserUpdateSchema, db: AsyncSession, current_user: User):
+async def change_user_role(user_id: int, body: UserUpdateSchema, db: AsyncSession, current_user: User):
     """
     The change_user_role function changes the role of a user.
         Args:
@@ -182,38 +182,36 @@ async def change_user_role(user_id: uuid.UUID, body: UserUpdateSchema, db: Async
     user = user.scalar_one_or_none()
     if user:
         if current_user.role == Role.admin:
-            user.banned = body.banned
-            user.banned_at = func.now()
-        user.role = body.role
-        user.updated_at = func.now()
-        await db.commit()
-        await db.refresh(user)
+            user.role = body.role
+            user.updated_at = func.now()
+            await db.commit()
+            await db.refresh(user)
         return user
             
     
-async def delete_user(user_id: uuid.UUID, db: AsyncSession, current_user: User):
+# async def delete_user(user_id: int, db: AsyncSession, current_user: User):
     
-    """
-    The delete_user function deletes a user from the database.
-        Args:
-            user_id (uuid): The id of the user to delete.
-            db (AsyncSession): An async session object for interacting with the database.
-            current_user (User): The currently logged in User object, used to determine if they have permission to delete this resource or not.
+#     """
+#     The delete_user function deletes a user from the database.
+#         Args:
+#             user_id (uuid): The id of the user to delete.
+#             db (AsyncSession): An async session object for interacting with the database.
+#             current_user (User): The currently logged in User object, used to determine if they have permission to delete this resource or not.
     
-    :param user_id: uuid.UUID: Get the user_id from the url
-    :param db: AsyncSession: Pass the database session to the function
-    :param current_user: User: Check if the user is an admin or not
-    :return: A user object, which is a dictionary
-    :doc-author: Trelent
-    """
-    stmt = select(User).filter_by(id=user_id)
-    user = await db.execute(stmt)
-    user = user.scalar_one_or_none()
-    if user.id == current_user.id or current_user.role == Role.admin:
-        await db.delete(user)
-        await db.commit()
-        return user
-    else:
-        user.username = messages.USER_NOT_HAVE_PERMISSIONS
-        return user
+#     :param user_id: uuid.UUID: Get the user_id from the url
+#     :param db: AsyncSession: Pass the database session to the function
+#     :param current_user: User: Check if the user is an admin or not
+#     :return: A user object, which is a dictionary
+#     :doc-author: Trelent
+#     """
+#     stmt = select(User).filter_by(id=user_id)
+#     user = await db.execute(stmt)
+#     user = user.scalar_one_or_none()
+#     if user.id == current_user.id or current_user.role == Role.admin:
+#         await db.delete(user)
+#         await db.commit()
+#         return user
+#     else:
+#         user.username = messages.USER_NOT_HAVE_PERMISSIONS
+#         return user
 
