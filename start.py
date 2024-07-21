@@ -4,9 +4,8 @@ import os
 commands = [
     "poetry shell",
     "poetry update package",
-    # "docker pull postgres",
     "docker-compose up -d",
-    "alembic",
+    "pause",
     "alembic upgrade head",
     "uvicorn main:app --host localhost --port 8000 --reload",
 ]
