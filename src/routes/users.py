@@ -1,8 +1,8 @@
 import pickle
 # import uuid
 
-import cloudinary
-import cloudinary.uploader
+# import cloudinary
+# import cloudinary.uploader
 from fastapi import APIRouter, HTTPException, Depends, Query, status, UploadFile, File, Path
 from fastapi_limiter.depends import RateLimiter
 from sqlalchemy.ext.asyncio import AsyncSession
