@@ -21,6 +21,11 @@ RECEIVED_CONFIRMATION = "We received confirmation for update password"
 PASSWORD_UPDATE_SUCCESSFULLY = "Password was updated successfully!"
 DIFFERENT_PASSWORD = "Passwords are not the same"
 LOGOUT = "User is logout"
+VEHICLE_ALREADY_BLACK_LIST = "Vehicle is already in black_list"
+VEHICLE_NOT_FOUND = "Vehicle not found"
+LICENSE_PLATE_NOT_UNIQUE = "License plate not unique"
+UPDATED_LICENSE_PLACE_NOT_FOUND = "Number of updated license plate not found"
+
 # RATING_VALUE_INCORRECT = (
 #     f"Rating must be between {RATING_MIN_VALUE} and {RATING_MAX_VALUE}"
 # )

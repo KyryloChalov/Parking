@@ -35,8 +35,8 @@ class Setting (Base):
     __tablename__ = "settings"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     capacity: Mapped[int] = mapped_column(Integer, nullable = False) # ємкість стоянки 
-    num_days_reminder: Mapped[int] = mapped_column(Integer) # перевіряти чи є оплата, і відсилати листа з нагадуванням
-    num_days_benefit: Mapped[int] = mapped_column(Integer) # кількість днів, коли ми ще пускаємо на стоянку користувача, якщо не оплачено
+    num_days_reminder: Mapped[int] = mapped_column(Integer, nullable = True) # перевіряти чи є оплата, і відсилати листа з нагадуванням
+    num_days_benefit: Mapped[int] = mapped_column(Integer, nullable = True) # кількість днів, коли ми ще пускаємо на стоянку користувача, якщо не оплачено
 
 class Role(enum.Enum):
     admin: str = "admin"
@@ -68,12 +68,14 @@ class User(Base, Datefield):
     password: Mapped[str] = mapped_column(String(PASSWORD_MAX_LENGTH), nullable=False)
     refresh_token: Mapped[str] = mapped_column(String(TOKEN_MAX_LENGTH), nullable=True)
     role: Mapped[Enum] = mapped_column(
-        "role", Enum(Role), default=Role.guest, nullable=False
+        "role", Enum(Role), default=Role.user, nullable=False
     )
     confirmed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)
     vehicle: Mapped["Vehicle"] = relationship(
         "Vehicle", backref="users"
     )
+    blacklist: Mapped["Blacklist"] = relationship(
+        "Blacklist", backref="users")
 
 
 class Vehicle(Base, Datefield):
@@ -83,7 +85,7 @@ class Vehicle(Base, Datefield):
     license_plate: Mapped[str] = mapped_column(
         String(LICENSE_PLATE_MAX_LENGTH), nullable=False, unique=True
     )
-    owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
     rate_id:  Mapped[int] = mapped_column(
         ForeignKey("rates.id"), nullable=False
     )
@@ -99,6 +101,10 @@ class Blacklist(Base, Datefield):
         ForeignKey("vehicles.id"), nullable=False
     )
     reason: Mapped[str] = mapped_column(String(COMMENT_MAX_LENGTH), nullable=False)
+    # 
+    vehicle: Mapped["Vehicle"] = relationship(
+        "Vehicle", backref="blacklists", lazy= "joined"
+    )
     
 class Notification(Base, Datefield):
     __tablename__ = "notifications"
@@ -131,8 +137,8 @@ class Payment(Base):
         ForeignKey("vehicles.id"), nullable=False
     )
     session_id: Mapped[int] = mapped_column(
-        ForeignKey("sessions.id"), 
-        # nullable=False - може бути оплата за місяць
+        ForeignKey("sessions.id"), nullable=True
+        #  може бути оплата за місяць
     )
     created_at: Mapped[date] = mapped_column("created_at", DateTime, default=func.now())
     amount: Mapped[int] = mapped_column(Integer, nullable=False)
