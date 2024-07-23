@@ -1,9 +1,14 @@
+import tensoflow
+import keras
+
+from datetime import datetime
+
 import cv2
 import os
 import numpy as np
-from datetime import datetime
 from keras.models import load_model
 from matplotlib import pyplot as plt
+
 
 car_photo = "../images/AE1455KH_f.jpg"
 
