@@ -23,7 +23,8 @@ DIFFERENT_PASSWORD = "Passwords are not the same"
 LOGOUT = "User is logout"
 VEHICLE_ALREADY_BLACK_LIST = "Vehicle is already in black_list"
 VEHICLE_NOT_FOUND = "Vehicle not found"
-LICENSE_PLATE_NOT_UNIQUE = "License plate not unique"
+VEHICLE_USER_NOT_FOUND = "We don't have info about owner of this vehicle"
+LICENSE_PLATE_NOT_UNIQUE = "License plate not unique or exist in base"
 UPDATED_LICENSE_PLACE_NOT_FOUND = "Number of updated license plate not found"
 
 # RATING_VALUE_INCORRECT = (
