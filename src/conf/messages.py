@@ -44,3 +44,7 @@ SOMETHING_WRONG = "Something went wrong!"
 # RATING_NOT_FOUND = "Rating not found"
 # RATING_ALREADY_SET = "You already set rating for this photo"
 # RATING_OWN_PHOTO = "You can not set rating for own photo"
+
+NO_SESSION_FOUND = "No parking session found for this vehicle"
+RATE_NOT_FOUND = "Rate not found"
+RATE_ALREADY_EXISTS = "Rate already exists"
