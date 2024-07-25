@@ -49,6 +49,12 @@ def display_image(img_, title=""):
     plt.title(title, fontsize=20)
     plt.show()
 
+def draw_number_border(plate_img, plate_rect, color_=""):
+    '''малювання прямокутника по межі номера'''
+    border_color = (0, 0, 200) if (color_ == RED) else (51, 181, 155)
+    for x, y, w, h in plate_rect:
+        cv2.rectangle(plate_img, (x + 2, y), (x + w - 3, y + h - 5), border_color, 3)
+
 
 def detect_plate(img_, text=""):
     """
@@ -77,7 +83,9 @@ def detect_plate(img_, text=""):
     for x, y, w, h in plate_rect:
         plate_ = reg_of_intr[y : y + h, x : x + w, :]
         # малювання прямокутника по межі номера
-        cv2.rectangle(plate_img, (x + 2, y), (x + w - 3, y + h - 5), (51, 181, 155), 3)
+        draw_number_border(plate_img, plate_rect)
+        # cv2.rectangle(plate_img, (x + 2, y), (x + w - 3, y + h - 5), (51, 181, 155), 3)
+        # cv2.rectangle(plate_img, (x + 2, y), (x + w - 3, y + h - 5), (51, 181, 155), 3)
 
     # Додавання тексту
     if text != "":
@@ -93,7 +101,7 @@ def detect_plate(img_, text=""):
         )
 
     # Повертаємо оброблене зображення з виділеними номерними знаками та область номерного знаку
-    return plate_img, plate_
+    return plate_img, plate_, plate_rect
 
 
 def find_contours(dimensions, img_, echo=True):
@@ -368,11 +376,12 @@ def processing(photo, echo=True, log_on=False) -> str:
     """
     car_photo = os.path.join(current_dir, PHOTO_FOLDER, photo)
     car_photo_imread = cv2.imread(car_photo)
+    plate_rect = []
     if log_on:
         print(f"{GRAY}{photo = }{RESET}")
 
     try:
-        output_img, plate = detect_plate(car_photo_imread)
+        output_img, plate, plate_rect = detect_plate(car_photo_imread)
         license_plate_symbols = segment_characters(plate, echo=False)
         plate_number_ = prediction_number(license_plate_symbols)
     except UnboundLocalError:
@@ -389,14 +398,15 @@ def processing(photo, echo=True, log_on=False) -> str:
     # if re.match(r"^[A-Z0-9]+$", plate_number_):
     if not validate_ukraine_plate(plate_number_):
         number_color = RED
+        if len(plate_rect) > 0:
+            draw_number_border(output_img, plate_rect, color_=number_color)
         if log_on:
             print(number_color, TAB, plate_number_, "<<< Attention!!!", RESET)
 
-    img_result = make_final_image(
-        output_img, recognized_text=plate_number_, color_=number_color
-    )
-
     if echo:
+        img_result = make_final_image(
+            output_img, recognized_text=plate_number_, color_=number_color
+        )
         display_image(
             img_result,
             title="Номерний знак" + (" НЕ" if number_color else "") + " розпізнано",
@@ -417,11 +427,11 @@ tmp_file = os.path.join(current_dir, TMP)
 
 if __name__ == "__main__":
 
-    # # all photos from [IMAGES]
-    # images_for_demo = IMAGES
+    # all photos from [IMAGES]
+    images_for_demo = IMAGES
 
-    # slices - for testing
-    images_for_demo = IMAGES[0:1] + IMAGES[4:7] + IMAGES[-3:]
+    # # slices - for testing
+    # images_for_demo = IMAGES[0:1] + IMAGES[4:7] + IMAGES[-3:]
 
     for image in images_for_demo:
         plate_number = processing(image, echo=True, log_on=True)
