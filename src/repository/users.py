@@ -2,13 +2,14 @@
 
 from fastapi import Depends, HTTPException, status
 from sqlalchemy import select, func
+from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 from libgravatar import Gravatar
 
 from src.conf import messages
 from src.database.db import get_db
-from src.models.models import Role, User
-from src.schemas.user import UserSchema, UserUpdateSchema
+from src.models.models import Role, User, Vehicle
+from src.schemas.user import UserSchema, UserUpdateSchema, AboutUser
 
 
 async def get_user_by_email(email: str, db: AsyncSession = Depends(get_db)):
@@ -123,9 +124,38 @@ async def get_all_users(limit: int, offset: int, db: AsyncSession):
     :return: A list of contact objects
     :doc-author: Trelent
     """
-    stmt = select(User).offset(offset).limit(limit)
-    users = await db.execute(stmt)
-    return users.scalars().all()
+    # stmt = select(User).offset(offset).limit(limit)
+    # users = await db.execute(stmt)
+    # return users.scalars().all()
+    stmt = (
+        select(
+            User.id,
+            User.name,
+            User.username,
+            User.email,
+            User.role,
+            User.created_at,
+            Vehicle.license_plate,
+        )
+        .outerjoin(Vehicle, User.id == Vehicle.owner_id)
+    ).offset(offset).limit(limit)
+    result = await db.execute(stmt)
+    users = result.fetchall()
+    # Форматування даних для повернення у відповідності до схеми
+    formatted_result = [
+        AboutUser(
+            id = u.id,
+            name= u.name,
+            username= u.username,
+            email= u.email,
+            role= u.role,
+            created_at = u.created_at,
+            license_plate= u.license_plate,
+        )
+        for u in users
+    ]
+    print(formatted_result)
+    return formatted_result
 
 
 async def get_user_by_username(username: str, db: AsyncSession):
@@ -134,15 +164,40 @@ async def get_user_by_username(username: str, db: AsyncSession):
     user = user.scalar_one_or_none()
     return user
 
-# async def get_info_by_username(username: str, db: AsyncSession):
-#     user = await get_user_by_username(username, db)
-#     if user:
-#         statement = select(func.count()).select_from(Photo).filter_by(user_id=user.id)
-#         num_photos: int = await db.execute(statement)
-#         num_photos = num_photos.scalar()
-#         return user, num_photos
-#     else:
-#         return user, None
+async def get_info_by_username(username: str, current_user: User, db: AsyncSession):
+    stmt = (
+        select(
+            User.id,
+            User.name,
+            User.username,
+            User.email,
+            User.role,
+            User.created_at,
+            Vehicle.license_plate,
+        )
+        .outerjoin(Vehicle, User.id == Vehicle.owner_id)
+    .where(User.username == username)
+    )
+    result = await db.execute(stmt)
+    user = result.fetchall()
+    if user:
+        if user[0].id != current_user.id and current_user.role != Role.admin:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=messages.USER_NOT_HAVE_PERMISSIONS)
+    # Форматування даних для повернення у відповідності до схеми
+        formatted_result = [AboutUser(
+            id = u.id,
+            name= u.name,
+            username= u.username,
+            email= u.email,
+            role= u.role,
+            created_at = u.created_at,
+            license_plate= u.license_plate,
+        )
+        for u in user
+        ]
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.NOT_CORRECT_USERNAME)
+    return formatted_result
 
 async def update_user(user_id: int, body: UserUpdateSchema, db: AsyncSession, current_user: User):
     stmt = select(User).filter_by(id=user_id)

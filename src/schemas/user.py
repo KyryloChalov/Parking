@@ -58,8 +58,8 @@ class UserChangeRoleResponse(UserResponse):
     updated_at: datetime
 
 class AboutUser(UserResponse):
-    ...
-    # num_photos: int
+    license_plate: str | None
+
 
 class TokenSchema(BaseModel):
     access_token: str
