@@ -24,7 +24,7 @@ access_to_route_all = RoleAccess([Role.admin])
 
 
 @router.get(
-    "/", response_model=list[UserResponse], dependencies=[Depends(access_to_route_all)]
+    "/", response_model=list[AboutUser], dependencies=[Depends(access_to_route_all)]
 )
 async def get_all_users(
     limit: int = Query(10, ge=10, le=500),
@@ -197,29 +197,15 @@ async def get_me(user: User = Depends(auth_service.get_current_user)):
     return user
 
 
-@router.get("/{username}", response_model=AboutUser)
+@router.get("/{username}", response_model=list[AboutUser])
 async def get_username_info(
     username: str,
     db: AsyncSession = Depends(get_db),
-    # user: User = Depends(auth_service.get_current_user),
+    user: User = Depends(auth_service.get_current_user),
 ):
-
-    """
-    The get_username_info function returns the user's information and number of photos.
-        Args:
-            username (str): The username of the user whose info is being requested.
-            db (AsyncSession): An async session for interacting with a database. Defaults to Depends(get_db).
-            user (User): A User object representing the current logged in user, defaults to Depends(auth_service.get_current_user)
-    
-    :param username: str: Get the username from the url path
-    :param db: AsyncSession: Pass the database session to the repository function
-    :param user: User: Get the current user
-    :return: A user object
-    :doc-author: Trelent
-    """
-    # user, num_photos = await repositories_users.get_info_by_username(username, db)
-    user = await repositories_users.get_user_by_username(username, db)
-    if user is None:
+    # if user.role != Role.admin:
+    #     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=messages.USER_NOT_HAVE_PERMISSIONS)
+    user_veh = await repositories_users.get_info_by_username(username, user, db)
+    if user_veh is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.USER_NOT_FOUND)
-    # user.num_photos = num_photos
-    return user
+    return user_veh

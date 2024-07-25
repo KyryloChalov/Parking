@@ -16,6 +16,7 @@ USER_DELETED = "User deleted successfully"
 USER_NOT_HAVE_PERMISSIONS = "You don't have permissions"
 USER_FORBIDDEN = "You are forbidden"
 USER_OR_EMAIL_NOT_UNIQUE = "This Username or email is not unique"
+NOT_CORRECT_USERNAME = "We don't have user with this username"
 WRONG_ROLE = "Wrong role. You can't change user to admin"
 RECEIVED_CONFIRMATION = "We received confirmation for update password"
 PASSWORD_UPDATE_SUCCESSFULLY = "Password was updated successfully!"
@@ -26,6 +27,7 @@ VEHICLE_NOT_FOUND = "Vehicle not found"
 VEHICLE_USER_NOT_FOUND = "We don't have info about owner of this vehicle"
 LICENSE_PLATE_NOT_UNIQUE = "License plate not unique or exist in base"
 UPDATED_LICENSE_PLACE_NOT_FOUND = "Number of updated license plate not found"
+
 
 # RATING_VALUE_INCORRECT = (
 #     f"Rating must be between {RATING_MIN_VALUE} and {RATING_MAX_VALUE}"
