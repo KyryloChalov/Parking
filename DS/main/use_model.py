@@ -379,7 +379,7 @@ tmp_file = os.path.join(current_dir, TMP)
 
 if __name__ == "__main__":
     for image in IMAGES:
-        print("\033[33m\t", processing(image, echo=False), "\033[0m")
+        print("\033[33m\t", processing(image, echo=True), "\033[0m")
 
     # plate_number = processing(IMAGES[1], echo=True)
     # print("\033[33m\t", plate_number, "\033[0m")

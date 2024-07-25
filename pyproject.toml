@@ -36,11 +36,7 @@ databases = "^0.9.0"
 setuptools = "^69.2.0"
 faker = "^24.3.0"
 qrcode = "^7.4.2"
-<<<<<<< HEAD
-tensorflow = "2.16.2"
-=======
 tensorflow = "^2.16.0"
->>>>>>> 4cf7d16b61bc6585f6acac1c6c2739dd59daddc3
 keras = "^3.4.1"
 opencv-python = "^4.10.0.84"
 matplotlib = "^3.9.1"

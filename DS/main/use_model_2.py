@@ -1,19 +1,12 @@
-<<<<<<< HEAD
 import os
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
-=======
->>>>>>> 4cf7d16b61bc6585f6acac1c6c2739dd59daddc3
 import tensorflow
 import keras
 
 from datetime import datetime
 
 import cv2
-<<<<<<< HEAD
-=======
-import os
->>>>>>> 4cf7d16b61bc6585f6acac1c6c2739dd59daddc3
 import numpy as np
 from keras.models import load_model
 from matplotlib import pyplot as plt
@@ -33,11 +26,7 @@ def display(img_, title=""):
 
     plt.figure(figsize=(10, 6))
     ax = plt.subplot(111)
-<<<<<<< HEAD
     # ax.imshow(img)
-=======
-    #ax.imshow(img)
->>>>>>> 4cf7d16b61bc6585f6acac1c6c2739dd59daddc3
     plt.axis("off")
     plt.title(title, fontsize=20)
     plt.show()
@@ -310,10 +299,6 @@ def display_result(img_, title="", recognized_text="", font_scale=2, font_thickn
     # plt.title(title, fontsize=20)
     # plt.show()
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 4cf7d16b61bc6585f6acac1c6c2739dd59daddc3
 # loading the data required for detecting the license plates using cascade classifier.
 current_dir = os.getcwd()
 plate_cascade_path = os.path.join(
@@ -326,11 +311,7 @@ image_path = os.path.join(current_dir, car_photo)
 img = cv2.imread(image_path)
 display(img, "Вхідне зображення")
 
-<<<<<<< HEAD
 MODEL = os.path.join(current_dir, "DS/models/model_ua_license_plate.keras")
-=======
-MODEL = os.path.join(current_dir,"DS/models/model_ua_license_plate.keras")
->>>>>>> 4cf7d16b61bc6585f6acac1c6c2739dd59daddc3
 
 model = load_model(MODEL, compile=False)
 output_img, plate = detect_plate(img)
