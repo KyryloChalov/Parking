@@ -10,6 +10,7 @@ __pycache__/
 
 events*
 tmp/
+tmp
 
 # Distribution / packaging
 .Python
