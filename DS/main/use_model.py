@@ -1,4 +1,5 @@
 import os
+
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
@@ -7,8 +8,20 @@ from matplotlib import pyplot as plt
 
 import cv2
 import numpy as np
+import re
 
 from constants import IMAGES
+
+# from colors import YELLOW, BLUE, LIGHTBLUE, CYAN, GRAY, RESET
+
+YELLOW = "\033[33m"
+BLUE = "\033[34m"
+LIGHTBLUE = "\033[94m"
+RED = "\033[31m"
+CYAN = "\033[36m"
+GRAY = "\033[90m"
+RESET = "\033[0m"
+TAB = "\t"
 
 # from datetime import datetime
 
@@ -18,7 +31,9 @@ MODEL_KERAS = "DS/models/model_ua_license_plate.keras"
 TMP = "tmp/contour.jpg"
 BOX_COLOR = (220, 220, 220)
 
+
 # Функції:
+
 
 def display_image(img_, title=""):
     """
@@ -55,8 +70,6 @@ def detect_plate(img_, text=""):
         plate_img, scaleFactor=1.4, minNeighbors=7
     )
 
-    # print(f"     {plate_rect = }")
-    # print(f"{len(plate_rect) = }")
     if len(plate_rect) > 0:
         plate_rect = plate_rect[[len(plate_rect) - 1]]
 
@@ -111,13 +124,14 @@ def find_contours(dimensions, img_, echo=True):
     ii = cv2.imread(tmp_file)
 
     x_cntr_list = []
-    # target_contours = []
     img_res = []
+    # target_contours = []
     for cntr in cntrs:
         # detects contour in binary image and returns the coordinates of rectangle enclosing it
         intX, intY, intWidth, intHeight = cv2.boundingRect(cntr)
 
         # checking the dimensions of the contour to filter out the characters by contour's size
+        # if all(intWidth > lower_width, intWidth < upper_width, intHeight > lower_height, intHeight < upper_height):
         if (
             intWidth > lower_width
             and intWidth < upper_width
@@ -167,7 +181,7 @@ def find_contours(dimensions, img_, echo=True):
     return img_res
 
 
-def segment_characters(image, echo=True):
+def segment_characters(image_, echo=True):
     """
     Знаходить символи на зображенні номерного знака.
 
@@ -178,7 +192,7 @@ def segment_characters(image, echo=True):
      - char_list: Список контурів символів, знайдених на зображенні.
     """
     # Попередньо оброблюємо зображення номерного знака
-    img_lp = cv2.resize(image, (333, 75))  # Resize the image to a fixed size
+    img_lp = cv2.resize(image_, (333, 75))  # Resize the image to a fixed size
     img_gray_lp = cv2.cvtColor(img_lp, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
 
     # Apply binary thresholding
@@ -194,7 +208,7 @@ def segment_characters(image, echo=True):
     lp_width = img_binary_lp.shape[0]  # Get the width of the license plate
     lp_height = img_binary_lp.shape[1]  # Get the height of the license plate
 
-    # Робимо межі білими
+    # Робимо межі білими (3 пікселі)
     img_binary_lp[0:3, :] = 255  # Minimum character height
     img_binary_lp[:, 0:3] = 255  # Maximum character height
     img_binary_lp[72:75, :] = 255  # Minimum character width
@@ -235,7 +249,7 @@ def fix_dimension(img):
     return new_img
 
 
-def correction_ua_number(text):
+def correction_ua_number(text: str) -> str:
     # позиційна обробка ["1", "0", "7", '8'] <-> ["I", "O", "Z", 'B']
     # if len(text) == 8:
     text_list = list(text)
@@ -268,13 +282,19 @@ def correction_ua_number(text):
     return text
 
 
+def validate_ukraine_plate(text):
+    """
+    Validate Ukrainian plate format
+    """
+    pattern = r"^[A-Z]{2}\d{4}[A-Z]{2}$"
+    return bool(re.match(pattern, text))
+
+
 def prediction_number(char):
     """
-    Функція для показу результатів розпізнавання символів на номерному знаку.
-
+    Функція для розпізнавання символів на номерному знаку.
     Параметри:
     char (list): Список зображень символів номерного знаку.
-
     Повертає:
     str: Рядок, що містить розпізнану номерну знаку, складену з окремих символів.
     """
@@ -282,7 +302,6 @@ def prediction_number(char):
     characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     for i, c in enumerate(characters):
         dic[i] = c
-    # print(dic)
 
     output = []
     for i, ch in enumerate(char):  # ітеруємося по символах
@@ -302,7 +321,9 @@ def prediction_number(char):
     return plate_number_result
 
 
-def make_final_image(img_, recognized_text="", font_scale=2, font_thickness=3):
+def make_final_image(
+    img_, recognized_text="", color_="", font_scale=2, font_thickness=3
+):
 
     # Font settings for OpenCV
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -324,6 +345,7 @@ def make_final_image(img_, recognized_text="", font_scale=2, font_thickness=3):
     # Draw the white rectangle
     cv2.rectangle(img_, box_coords[0], box_coords[1], BOX_COLOR, cv2.FILLED)
 
+    color = (0, 0, 200) if (color_ == RED) else (0, 155, 0)
     # Add recognized text to the image
     img_output = cv2.putText(
         # Copy the image to avoid modifying the original one ???
@@ -333,37 +355,53 @@ def make_final_image(img_, recognized_text="", font_scale=2, font_thickness=3):
         text_position,
         font,
         font_scale,
-        (0, 155, 0),
+        color,
         font_thickness,
         cv2.LINE_AA,
     )
     return img_output
 
 
-def processing(photo, echo=True):
+def processing(photo, echo=True, log_on=False) -> str:
+    """
+    основна функція розпізнавання номеру
+    """
     car_photo = os.path.join(current_dir, PHOTO_FOLDER, photo)
     car_photo_imread = cv2.imread(car_photo)
-    print(f"{photo = }")
-
-    # display_image(car_photo_imread, "Вхідне зображення")
-    # plate_number = "NOT RECOGNIZED"
+    if log_on:
+        print(f"{GRAY}{photo = }{RESET}")
 
     try:
         output_img, plate = detect_plate(car_photo_imread)
         license_plate_symbols = segment_characters(plate, echo=False)
-        plate_number = prediction_number(license_plate_symbols)
+        plate_number_ = prediction_number(license_plate_symbols)
     except UnboundLocalError:
         output_img = car_photo_imread
-        plate_number = "NOT RECOGNIZED"
+        plate_number_ = "NOT RECOGNIZED"
 
-        if len(plate_number) == 8:
-            plate_number = correction_ua_number(text)
+    if log_on:
+        print(LIGHTBLUE, TAB, plate_number_, RESET)
 
-    img_result = make_final_image(output_img, recognized_text=plate_number)
+    if len(plate_number_) == 8:
+        plate_number_ = correction_ua_number(plate_number_)
+
+    number_color = ""
+    # if re.match(r"^[A-Z0-9]+$", plate_number_):
+    if not validate_ukraine_plate(plate_number_):
+        number_color = RED
+        if log_on:
+            print(number_color, TAB, plate_number_, "<<< Attention!!!", RESET)
+
+    img_result = make_final_image(
+        output_img, recognized_text=plate_number_, color_=number_color
+    )
 
     if echo:
-        display_image(img_result, title="Номерний знак")
-    return plate_number
+        display_image(
+            img_result,
+            title="Номерний знак" + (" НЕ" if number_color else "") + " розпізнано",
+        )
+    return plate_number_
 
 
 # loading the data required for detecting the license plates using cascade classifier.
@@ -378,8 +416,13 @@ model = load_model(model_keras, compile=False)
 tmp_file = os.path.join(current_dir, TMP)
 
 if __name__ == "__main__":
-    for image in IMAGES:
-        print("\033[33m\t", processing(image, echo=True), "\033[0m")
 
-    # plate_number = processing(IMAGES[1], echo=True)
-    # print("\033[33m\t", plate_number, "\033[0m")
+    # # all photos from [IMAGES]
+    # images_for_demo = IMAGES
+
+    # slices - for testing
+    images_for_demo = IMAGES[0:1] + IMAGES[4:7] + IMAGES[-3:]
+
+    for image in images_for_demo:
+        plate_number = processing(image, echo=True, log_on=True)
+        print(YELLOW, TAB, plate_number, RESET)
