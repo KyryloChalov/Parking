@@ -81,7 +81,6 @@ class User(Base, Datefield):
 class Vehicle(Base, Datefield):
     __tablename__ = "vehicles"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    # user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     license_plate: Mapped[str] = mapped_column(
         String(LICENSE_PLATE_MAX_LENGTH), nullable=False, unique=True
     )
@@ -101,10 +100,12 @@ class Blacklist(Base, Datefield):
         ForeignKey("vehicles.id"), nullable=False
     )
     reason: Mapped[str] = mapped_column(String(COMMENT_MAX_LENGTH), nullable=False)
-    # 
     vehicle: Mapped["Vehicle"] = relationship(
-        "Vehicle", backref="blacklists", lazy= "joined"
+        "Vehicle", backref="blacklists"
     )
+    # user: Mapped["User"] = relationship(
+    #     "User", backref="blacklists"
+    # )
     
 class Notification(Base, Datefield):
     __tablename__ = "notifications"

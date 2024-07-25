@@ -12,13 +12,22 @@ class BlacklistResposeSchema(BaseModel):
     updated_at: datetime | None
     reason: str = Field(max_length=COMMENT_MAX_LENGTH)
 
-class BLResposeSchema(BlacklistResposeSchema):
+class BLResposeSchema(BaseModel):
     license_plate: str
-    
+    created_at: datetime
+    updated_at: datetime | None
+    reason: str
+    class Config:
+        orm_mode = True
+
+class BlacklistedVehicleResponse(BLResposeSchema):
+    username: str
+    owner_name : str | None
+    owner_email: str | None
 
 class BlacklistSchema(BaseModel):
     license_plate: str = Field(max_length=LICENSE_PLATE_MAX_LENGTH)
     reason: str = Field(max_length=COMMENT_MAX_LENGTH)
-    
-# class CommentUpdateSchema(BaseModel):
-#     opinion: str = Field(max_length=COMMENT_MAX_LENGTH)
+
+class Reminder(BaseModel):
+    days : int

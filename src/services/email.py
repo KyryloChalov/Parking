@@ -85,3 +85,35 @@ async def send_reset_passw_email(email: EmailStr, username: str, host: str):
         await fm.send_message(message, template_name="email_reset_passw.html")
     except ConnectionErrors as err:
         print(err)
+
+
+async def send_email_by_license_plate(email: EmailStr, name: str, license_plate: str, days: int):
+    """
+    The send_email function sends an email to the user with a link to confirm their email address.
+        The function takes in three parameters:
+            -email: the user's email address, which is used as a recipient for the message.
+            -username: this is used in the body of the message, and will be displayed in the letter in email-template.html.
+            -host: this is where your website lives (e.g., &quot;localhost&quot; or &quot;127.0.0.1&quot;
+
+    :param email: EmailStr: Specify the email address of the recipient
+    :param username: str: Pass the username to the template
+    :param host: str: Pass the hostname of the server to the template
+    :return: A coroutine object that we can await
+    :doc-author: Trelent
+    """
+    try:
+        message = MessageSchema(
+            subject="Reminder: Parking space rental expires in 3 days",
+            recipients=[email],
+            template_body={
+                "username": name,
+                "license_plate": license_plate,
+                "days": days
+            },
+            subtype=MessageType.html,
+        )
+
+        fm = FastMail(conf)
+        await fm.send_message(message, template_name="email_user_vehicle.html")
+    except ConnectionErrors as err:
+        print(err)

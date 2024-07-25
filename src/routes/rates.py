@@ -18,8 +18,14 @@ async def create_rate(
 ):
     """
     Create a new rate. If a rate with the same name already exists, raises an error.
+    Only accessible to admins.
+
+    :param rate: RateSchema: Validate the request body
+    :param db: AsyncSession: Pass the database session to the function
+    :param user: User: Get the current user
+    :return: A rate object
     """
-    if user.role != Role.admin and user.role != Role.user:
+    if user.role != Role.admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=messages.USER_NOT_HAVE_PERMISSIONS)
 
     return await repository_rates.create_rate(rate, db)
@@ -31,6 +37,11 @@ async def get_rates(
 ):
     """
     Retrieve all existing rates.
+    Only accessible to admins and users.
+
+    :param db: AsyncSession: Pass the database session to the function
+    :param user: User: Get the current user
+    :return: A list of rates
     """
     if user.role != Role.admin and user.role != Role.user:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=messages.USER_NOT_HAVE_PERMISSIONS)
@@ -46,8 +57,15 @@ async def update_rate(
 ):
     """
     Update the price of a rate by its ID.
+    Only accessible to admins.
+
+    :param rate_id: int: Specify the rate to be updated
+    :param rate_update: RateUpdateSchema: Validate the request body
+    :param db: AsyncSession: Pass the database session to the function
+    :param user: User: Get the current user
+    :return: The updated rate object
     """
-    if user.role != Role.admin and user.role != Role.user:
+    if user.role != Role.admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=messages.USER_NOT_HAVE_PERMISSIONS)
 
     return await repository_rates.update_rate(rate_id, rate_update, db)
@@ -60,8 +78,14 @@ async def delete_rate(
 ):
     """
     Delete a rate by its ID.
+    Only accessible to admins.
+
+    :param rate_id: int: Specify the rate to be deleted
+    :param db: AsyncSession: Pass the database session to the function
+    :param user: User: Get the current user
+    :return: None
     """
-    if user.role != Role.admin and user.role != Role.user:
+    if user.role != Role.admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=messages.USER_NOT_HAVE_PERMISSIONS)
 
     await repository_rates.delete_rate(rate_id, db)
