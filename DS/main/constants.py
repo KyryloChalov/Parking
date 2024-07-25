@@ -23,26 +23,26 @@ NOT_NUMBER = [
 
 # Uploaded images
 IMAGES = [
-    "AE1455KH_f.jpg",
-    "BM8780EC.jpg",
-    "BA5486HE.jpg",
-    "BE0394EE.jpg",
-    "AX0787CO.jpg",
-    "BM7462BI.jpg",
-    "BA9635HA.jpg",
-    "BK9358HH.jpg",
-    "BM0485CM.jpg",
-    "AB6924KK.jpg",
-    "KA7777AC.jpg",
-    "KA3792KK.jpg",
-    "AA3003OB.jpg",
-    "AM3808CO.jpg",
-    "AE6638KK.jpg",
-    "KA8781IO.jpg",
-    "AE1455KH.jpg",
-    "AA6418XA.jpg",
-    "AA6418XA_2.jpg",
-    "BUBO4KA.jpg",
+    "AE1455KH_f.jpg",  # 0
+    "BM8780EC.jpg",  # 1
+    "BA5486HE.jpg",  # 2
+    "BE0394EE.jpg",  # 3
+    "AX0787CO.jpg",  # 4
+    "BM7462BI.jpg",  # 5
+    "BA9635HA.jpg",  # 6
+    "BK9358HH.jpg",  # 7
+    "BM0485CM.jpg",  # 8
+    "AB6924KK.jpg",  # 9
+    "KA7777AC.jpg",  # 10
+    "KA3792KK.jpg",  # 11
+    "AA3003OB.jpg",  # 12
+    "AM3808CO.jpg",  # 13
+    "AE6638KK.jpg",  # 14
+    "KA8781IO.jpg",  # 15
+    "AE1455KH.jpg",  # 16
+    "AA6418XA.jpg",  # 17
+    "AA6418XA_2.jpg",  # 18
+    "BUBO4KA.jpg",  # 19
     # "AE1455KH_4.jpg",
     # "AI8988IP.jpg",
     # "KE7777HT.jpg",

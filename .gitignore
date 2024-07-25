@@ -9,8 +9,8 @@ __pycache__/
 *.zip
 
 events*
-tmp/
-tmp
+
+seed/
 
 # Distribution / packaging
 .Python
@@ -174,3 +174,10 @@ postgres-data
 .idea
 contacts.py
 _deleted
+
+/tmp
+tmp
+tmp/
+tmp/*
+contour.jpg
+contour.*

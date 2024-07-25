@@ -18,6 +18,9 @@ YELLOW = "\033[33m"
 BLUE = "\033[34m"
 LIGHTBLUE = "\033[94m"
 RED = "\033[31m"
+RED_BACK = "\033[41m"
+LIGHTRED = "\033[91m"
+LIGHTRED_BACK = "\033[101m"
 CYAN = "\033[36m"
 GRAY = "\033[90m"
 RESET = "\033[0m"
@@ -260,6 +263,8 @@ def fix_dimension(img):
 def correction_ua_number(text: str) -> str:
     # позиційна обробка ["1", "0", "7", '8'] <-> ["I", "O", "Z", 'B']
     # if len(text) == 8:
+    # ризиковано: наприклад "00OOOO00" буде перетворено на "OO0000OO"
+    # "88BBBB88" -> "BB8888BB", "10BIGG88" -> "IO8166BB"
     text_list = list(text)
 
     for i in [0, 1, 6, 7]:
@@ -280,10 +285,13 @@ def correction_ua_number(text: str) -> str:
             .replace("I", "1")
             .replace("|", "1")
             .replace("O", "0")
+            .replace("J", "3")
+            .replace("G", "6")
+            .replace("A", "6")
             .replace("Z", "7")
             .replace("B", "8")
-            .replace("G", "6")
-            .replace("J", "3")
+            .replace("Y", "9")
+            .replace("S", "9")
         )
 
     text = "".join(text_list)
@@ -389,12 +397,18 @@ def processing(photo, echo=True, log_on=False):
         plate_number_ = "NOT RECOGNIZED"
 
     if log_on:
-        print(LIGHTBLUE, TAB, plate_number_, RESET)
+        print(LIGHTBLUE, TAB, plate_number_, end='')
+        if plate_number_ != photo.split(".")[0].split("_")[0]:
+            print(GRAY, "<<< likely differences", RESET)
+        else:
+            print(RESET)
 
+    plate_number_before_ua = plate_number_
     if len(plate_number_) == 8:
         plate_number_ = correction_ua_number(plate_number_)
+        if log_on and plate_number_ != plate_number_before_ua:
+            print(CYAN, TAB, plate_number_, "<<< corrected by ua_nm", RESET)
 
-    # if re.match(r"^[A-Z0-9]+$", plate_number_):
     if not validate_ukraine_plate(plate_number_):
         recognized = False
         if len(plate_rect) > 0:
@@ -431,13 +445,13 @@ if __name__ == "__main__":
     # images_for_demo = IMAGES
 
     # slices - for testing
-    images_for_demo = IMAGES[0:1] + IMAGES[4:7] + IMAGES[-3:]
+    images_for_demo = IMAGES[0:11] + IMAGES[-3:]
 
     for image in images_for_demo:
         plate_number, recognize = processing(image, echo=True, log_on=True)
         if recognize:
             print(YELLOW, TAB, plate_number, RESET)
         else:
-            print(RED, TAB, plate_number, "<<< Attention!!!", RESET)
+            print(RED, TAB, plate_number, "<<< requires attention", RESET)
             print("тут зробимо мануальний ввод номера")
             # input("Enter correct number >>> ")
