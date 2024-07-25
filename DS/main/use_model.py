@@ -35,23 +35,23 @@ BOX_COLOR = (220, 220, 220)
 # Функції:
 
 
-def display_image(img_, title=""):
+def display_image(img_, title="", recognized=True):
     """
     функція виводу зображень з заголовком
     """
     img_display = cv2.cvtColor(img_, cv2.COLOR_BGR2RGB)
-    # img = img_
 
     plt.figure(figsize=(10, 6))
     ax = plt.subplot(111)
     ax.imshow(img_display)
     plt.axis("off")
-    plt.title(title, fontsize=20)
+    plt.title(title, fontsize=20, color=(0.1, 0.2, 0.1) if recognized else (1, 0.0, 0.0))
     plt.show()
 
+
 def draw_number_border(plate_img, plate_rect, color_=""):
-    '''малювання прямокутника по межі номера'''
-    border_color = (0, 0, 200) if (color_ == RED) else (51, 181, 155)
+    """малювання прямокутника по межі номера червоним кольором, якщо color_!= ''"""
+    border_color = (0, 0, 200) if (color_) else (51, 181, 155)
     for x, y, w, h in plate_rect:
         cv2.rectangle(plate_img, (x + 2, y), (x + w - 3, y + h - 5), border_color, 3)
 
@@ -330,7 +330,7 @@ def prediction_number(char):
 
 
 def make_final_image(
-    img_, recognized_text="", color_="", font_scale=2, font_thickness=3
+    img_, recognized_text="", recognized=True, font_scale=2, font_thickness=3
 ):
 
     # Font settings for OpenCV
@@ -353,7 +353,7 @@ def make_final_image(
     # Draw the white rectangle
     cv2.rectangle(img_, box_coords[0], box_coords[1], BOX_COLOR, cv2.FILLED)
 
-    color = (0, 0, 200) if (color_ == RED) else (0, 155, 0)
+    color = (0, 155, 0) if recognized else (0, 0, 200)
     # Add recognized text to the image
     img_output = cv2.putText(
         # Copy the image to avoid modifying the original one ???
@@ -370,7 +370,7 @@ def make_final_image(
     return img_output
 
 
-def processing(photo, echo=True, log_on=False) -> str:
+def processing(photo, echo=True, log_on=False):
     """
     основна функція розпізнавання номеру
     """
@@ -394,24 +394,24 @@ def processing(photo, echo=True, log_on=False) -> str:
     if len(plate_number_) == 8:
         plate_number_ = correction_ua_number(plate_number_)
 
-    number_color = ""
     # if re.match(r"^[A-Z0-9]+$", plate_number_):
     if not validate_ukraine_plate(plate_number_):
-        number_color = RED
+        recognized = False
         if len(plate_rect) > 0:
-            draw_number_border(output_img, plate_rect, color_=number_color)
-        if log_on:
-            print(number_color, TAB, plate_number_, "<<< Attention!!!", RESET)
+            draw_number_border(output_img, plate_rect, color_=RED)
+    else:
+        recognized = True
 
     if echo:
         img_result = make_final_image(
-            output_img, recognized_text=plate_number_, color_=number_color
+            output_img, recognized_text=plate_number_, recognized=recognized
         )
         display_image(
             img_result,
-            title="Номерний знак" + (" НЕ" if number_color else "") + " розпізнано",
+            title="Номерний знак" + (" НЕ" if not recognized else "") + " розпізнано",
+            recognized=recognized,
         )
-    return plate_number_
+    return plate_number_, recognized
 
 
 # loading the data required for detecting the license plates using cascade classifier.
@@ -427,12 +427,17 @@ tmp_file = os.path.join(current_dir, TMP)
 
 if __name__ == "__main__":
 
-    # all photos from [IMAGES]
-    images_for_demo = IMAGES
+    # # all photos from [IMAGES]
+    # images_for_demo = IMAGES
 
-    # # slices - for testing
-    # images_for_demo = IMAGES[0:1] + IMAGES[4:7] + IMAGES[-3:]
+    # slices - for testing
+    images_for_demo = IMAGES[0:1] + IMAGES[4:7] + IMAGES[-3:]
 
     for image in images_for_demo:
-        plate_number = processing(image, echo=True, log_on=True)
-        print(YELLOW, TAB, plate_number, RESET)
+        plate_number, recognize = processing(image, echo=True, log_on=True)
+        if recognize:
+            print(YELLOW, TAB, plate_number, RESET)
+        else:
+            print(RED, TAB, plate_number, "<<< Attention!!!", RESET)
+            print("тут зробимо мануальний ввод номера")
+            # input("Enter correct number >>> ")
