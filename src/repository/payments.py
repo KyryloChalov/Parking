@@ -165,7 +165,7 @@ async def calculate_parking_fee(start_time: datetime, end_time: datetime, db: As
             return rate.price
         except NoResultFound:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=status.HTTP_404_NOT_FOUND,
                 detail=messages.RATE_NOT_FOUND + ": " + name
             )
 
@@ -173,12 +173,12 @@ async def calculate_parking_fee(start_time: datetime, end_time: datetime, db: As
     hourly_rate = await get_rate_by_name("hourly")
     daily_rate = await get_rate_by_name("daily")
     monthly_rate = await get_rate_by_name("monthly")
-
+    print(hourly_rate)
     # Calculate parking duration
     duration = end_time - start_time
     hours = ceil(duration.total_seconds() / 3600)
     days = ceil(duration.total_seconds() / (3600 * 24))
-
+    print('duration: ', duration)
     # Determine fee
     if hours < 10:
         fee = hours * hourly_rate

@@ -19,7 +19,9 @@ from src.models.models import User
 # from src.routes import photos
 from src.database.db import get_db
 from src.conf.config import config
-from src.routes import auth, users, vehicles, payments, rates, settings, seed, session
+
+from src.routes import auth, users, vehicles, payments, rates, settings, utilities, seed, session
+
 from src.services.auth import auth_service
 from src.conf import messages
 
@@ -79,8 +81,12 @@ app.include_router(vehicles.router, prefix="/api")
 app.include_router(payments.router, prefix="/api")
 app.include_router(rates.router, prefix="/api")
 app.include_router(settings.router, prefix="/api")
+
+app.include_router(utilities.router, prefix="/api")
+
 app.include_router(session.router, prefix="/api")
 # app.include_router(comments.router, prefix="/api")
+
 # app.include_router(ratings.router, prefix="/api")
 app.include_router(seed.router, prefix="")
 

@@ -103,7 +103,7 @@ async def send_email_by_license_plate(email: EmailStr, name: str, license_plate:
     """
     try:
         message = MessageSchema(
-            subject="Reminder: Parking space rental expires in 3 days",
+            subject=f"Reminder: Parking space rental expires in {days} days",
             recipients=[email],
             template_body={
                 "username": name,

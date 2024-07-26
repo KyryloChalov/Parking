@@ -49,12 +49,12 @@ async def get_last_10_payments(
     return payments
 
 
-@router.get("/{license_plate}/calculate")
+@router.get("/calculate")
 async def calculate_payment(
     start_time: datetime,
     end_time: datetime,
-    icense_plate: Optional[str] = Query(
-        None, description="License plate of the vehicle"),
+    # icense_plate: Optional[str] = Query(
+    #     None, description="License plate of the vehicle"),
     db: AsyncSession = Depends(get_db),
     user: User = Depends(auth_service.get_current_user)
 ):

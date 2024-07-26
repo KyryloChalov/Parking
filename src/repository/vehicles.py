@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from fastapi import Depends, HTTPException, status
 from sqlalchemy import select, func
 from sqlalchemy.orm import joinedload, aliased
@@ -5,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.conf import messages
 from src.database.db import get_db
-from src.models.models import Role, User, Vehicle, Blacklist
+from src.models.models import Role, User, Vehicle, Blacklist, Setting
 from src.schemas.vehicles import (
     BlacklistSchema,
     BLResposeSchema,
@@ -257,6 +259,21 @@ async def get_all_vehicles(limit: int, offset: int, db: AsyncSession):
     stmt = select(Vehicle).offset(offset).limit(limit)
     vehicles = await db.execute(stmt)
     return vehicles.scalars().all()
+
+
+async def get_all_vehicles_reminder(db: AsyncSession):
+    stmt = select(Setting)
+    result = await db.execute(stmt)
+    setting = result.scalar_one_or_none()
+    days_reminder = datetime.now().date() + timedelta(days=setting.num_days_reminder)
+    
+    stmt = select(Vehicle).where(Vehicle.ended_at <= days_reminder)
+    result = await db.execute(stmt)
+    vehicles = result.scalars().all()
+    if vehicles:
+        return vehicles
+    else:
+        return None
 
 
 async def update_vehicle(

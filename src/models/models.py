@@ -9,9 +9,10 @@ from sqlalchemy import (
     Enum,
     ForeignKey,
     Boolean,
+    Date
 )
 
-from sqlalchemy.sql.sqltypes import Date, DateTime
+from sqlalchemy.sql.sqltypes import DateTime
 from sqlalchemy_utils import EmailType
 
 from sqlalchemy.orm import DeclarativeBase
@@ -84,6 +85,7 @@ class Vehicle(Base, Datefield):
     license_plate: Mapped[str] = mapped_column(
         String(LICENSE_PLATE_MAX_LENGTH), nullable=False, unique=True
     )
+    ended_at: Mapped[date] = mapped_column(Date, nullable=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
     rate_id:  Mapped[int] = mapped_column(
         ForeignKey("rates.id"), nullable=False
@@ -143,4 +145,3 @@ class Payment(Base):
     )
     created_at: Mapped[date] = mapped_column("created_at", DateTime, default=func.now())
     amount: Mapped[int] = mapped_column(Integer, nullable=False)
-# при внесении оплати за месяц или год изменяем поле end_date в таблице vehicles (+месяц или +год)
