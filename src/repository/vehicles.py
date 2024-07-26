@@ -259,28 +259,27 @@ async def get_all_vehicles(limit: int, offset: int, db: AsyncSession):
     return vehicles.scalars().all()
 
 
-# async def update_vehicle(
-#     vehicle_id: int, body: VehicleUpdateSchema, db: AsyncSession, current_user: User
-# ):
-#     stmt = select(Vehicle).filter_by(id=vehicle_id)
-#     vehicle = await db.execute(stmt)
-#     vehicle = vehicle.scalar_one_or_none()
+async def update_vehicle(
+    license_plate: int, body: VehicleUpdateSchema, db: AsyncSession, current_user: User
+):
+    stmt = select(Vehicle).filter_by(license_plate=license_plate)
+    vehicle = await db.execute(stmt)
+    vehicle = vehicle.scalar_one_or_none()
 
-#     if vehicle:
+    if vehicle:
 
-#         vehicle.license_plate = body.license_plate
-#         vehicle.owner_id = body.owner_id
-#         vehicle.rate_id = body.rate_id
-#         vehicle.updated_at = body.updated_at
+        vehicle.owner_id = body.owner_id
+        vehicle.rate_id = body.rate_id
 
-#         try:
-#             await db.commit()
-#             await db.refresh(vehicle)
-#         except Exception as e:
-#             await db.rollback()
-#             raise e
+        try:
+            await db.commit()
+            await db.refresh(vehicle)
+        except Exception as e:
+            await db.rollback()
+            raise e
 
-#         return vehicle
+        return vehicle
+
 
 #     else:
 #         raise HTTPException(

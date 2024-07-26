@@ -48,7 +48,7 @@ class VehicleSchema(BaseModel):
 
 
 class VehicleUpdateSchema(BaseModel):
-    license_plate: str = Field(max_length=LICENSE_PLATE_MAX_LENGTH)
+
     owner_id: int
     rate_id: int
     updated_at: datetime | None
