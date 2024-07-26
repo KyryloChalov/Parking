@@ -53,7 +53,7 @@ async def create_settings(
     return await settings_repository.create_settings(setting, db)
 
 
-@router.put("/{setting_id}", response_model=SettingUpdateSchema)
+@router.patch("/{setting_id}", response_model=SettingUpdateSchema)
 async def update_settings(
     setting_id: int,
     setting_update: SettingUpdateSchema,
