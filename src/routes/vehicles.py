@@ -317,3 +317,18 @@ async def get_all_vehicles(
 
     vehicles = await repositories_vehicles.get_all_vehicles(limit, offset, db)
     return vehicles
+
+@router.get(
+    "/reminder",
+    response_model=list[VehicleResponse],
+    dependencies=[Depends(access_to_route_all)],
+)
+async def get_all_vehicles_reminder(
+    limit: int = Query(10, ge=10, le=500),
+    offset: int = Query(0, ge=0),
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(auth_service.get_current_user),
+):
+
+    vehicles = await repositories_vehicles.get_all_vehicles(limit, offset, db)
+    return vehicles

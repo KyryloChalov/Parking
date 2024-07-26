@@ -41,15 +41,15 @@ class Reminder(BaseModel):
 
 class VehicleSchema(BaseModel):
     license_plate: str = Field(max_length=LICENSE_PLATE_MAX_LENGTH)
-    owner_id: int
+    owner_id: int | None
     rate_id: int
     created_at: datetime
-    updated_at: datetime | None
+    # updated_at: datetime | None
 
 
 class VehicleUpdateSchema(BaseModel):
 
-    owner_id: int
+    owner_id: int | None
     rate_id: int
     updated_at: datetime | None
 
@@ -57,7 +57,7 @@ class VehicleUpdateSchema(BaseModel):
 class VehicleResponse(BaseModel):
     id: int
     license_plate: str = Field(max_length=LICENSE_PLATE_MAX_LENGTH)
-    owner_id: int
+    owner_id: int | None
     rate_id: int
     created_at: datetime
     updated_at: datetime | None
