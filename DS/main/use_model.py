@@ -265,6 +265,7 @@ def correction_ua_number(text: str) -> str:
     # if len(text) == 8:
     # ризиковано: наприклад "00OOOO00" буде перетворено на "OO0000OO"
     # "88BBBB88" -> "BB8888BB", "10BIGG88" -> "IO8166BB"
+    # "BOSS2000" -> "BO9920OO"
     text_list = list(text)
 
     for i in [0, 1, 6, 7]:
