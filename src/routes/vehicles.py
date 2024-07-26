@@ -273,32 +273,34 @@ async def get_license_plate_info(
     return exist_vehicle
 
 
-# @router.patch(
-#     "/{vehicle_id}",
-#     response_model=VehicleSchema,
-#     dependencies=[Depends(RateLimiter(times=1, seconds=20))],
-# )
-# async def update_car_info(
-#     vehicle_id: int,
-#     body: VehicleUpdateSchema,
-#     db: AsyncSession = Depends(get_db),
-#     user: User = Depends(auth_service.get_current_user),
-# ):
-#     if user.role != Role.admin:
-#         raise HTTPException(
-#             status_code=status.HTTP_403_FORBIDDEN,
-#             detail=messages.USER_NOT_HAVE_PERMISSIONS,
-#         )
-#     try:
+@router.patch(
+    "/{license_plate}",
+    response_model=VehicleSchema,
+    dependencies=[Depends(RateLimiter(times=1, seconds=20))],
+)
+async def update_car_info(
+    license_plate: str,
+    body: VehicleUpdateSchema,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(auth_service.get_current_user),
+):
+    if user.role != Role.admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=messages.USER_NOT_HAVE_PERMISSIONS,
+        )
+    try:
 
-#         vehicle = await repositories_vehicles.update_vehicle(vehicle_id, body, db, user)
-#         if vehicle is None:
-#             raise HTTPException(
-#                 status_code=status.HTTP_404_NOT_FOUND, detail=messages.VEHICLE_NOT_FOUND
-#             )
-#     except Exception as e:
-#         raise HTTPException(status_code=409, detail=messages.LICENSE_PLATE_NOT_UNIQUE)
-#     return vehicle
+        vehicle = await repositories_vehicles.update_vehicle(
+            license_plate, body, db, user
+        )
+        if vehicle is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail=messages.VEHICLE_NOT_FOUND
+            )
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=messages.LICENSE_PLATE_NOT_UNIQUE)
+    return vehicle
 
 
 @router.get(
