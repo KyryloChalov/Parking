@@ -1,4 +1,4 @@
-from faker import Faker
+# from faker import Faker
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
@@ -7,9 +7,10 @@ from src.database.db import get_db
 from src.models.models import Vehicle, User, Rate
 
 import random
+
 # import datetime
 
-fake_data: Faker = Faker(["uk_UA", "en_US"])
+# fake_data: Faker = Faker(["uk_UA", "en_US"])
 
 
 async def seed_vehicles(db: AsyncSession = Depends(get_db)):
@@ -46,7 +47,7 @@ async def seed_vehicles(db: AsyncSession = Depends(get_db)):
     # print(f"{len(rates_id) = }")
 
     license_plates = [
-        "AE1455KH",  # 0
+        "AE1455KH",  # 0 - вільний
         "BM8780EC",  # 1
         "BA5486HE",  # 2
         "BE0394EE",  # 3
@@ -59,12 +60,12 @@ async def seed_vehicles(db: AsyncSession = Depends(get_db)):
         "KA7777AC",  # 10
         "KA3792KK",  # 11
         "AA3003OB",  # 12
-        "AM3808CO",  # 13
-        "AE6638KK",  # 14
-        "KA8781IO",  # 15
-        "AA6418XA",  # 16
-        "БУБОЧКА",  # 17
-        ]
+        "AM3808CO",  # 13 - край
+        "AE6638KK",  # 14 - guest
+        "KA8781IO",  # 15 - guest
+        "AA6418XA",  # 16 - guest
+        "БУБОЧКА",  # 17 - guest
+    ]
     # print(f"{license_plates = }")
 
     i = 0
@@ -77,7 +78,7 @@ async def seed_vehicles(db: AsyncSession = Depends(get_db)):
         new_vehicle = Vehicle(
             license_plate=license_plates[i],
             owner_id=user_id,
-            rate_id=rates_id[random.randint(0, len(rates_id)-1)],
+            rate_id=rates_id[random.randint(0, len(rates_id) - 1)],
             # created_at="2024-07-26T23:03:29.641Z",
             # updated_at="2024-07-26T23:03:29.641Z",
             # created_at=datetime.datetime.now(),
@@ -89,14 +90,14 @@ async def seed_vehicles(db: AsyncSession = Depends(get_db)):
     # print(f"{len(license_plates) = }")
     # print(f"{len(users_id) = }")
     if len(license_plates) > len(users_id):
-        num_additional_vehicles = len(license_plates) - len(users_id)-3 # 3 шт
+        num_additional_vehicles = len(license_plates) - len(users_id) - 4  # 3 шт
         for num in range(1, num_additional_vehicles):
             # print(license_plates[num+len(users_id)])
             # print(users_id[random.randint(0, len(users_id)-1)])
             new_vehicle = Vehicle(
-                license_plate=license_plates[num+len(users_id)],
-                owner_id=users_id[random.randint(0, len(users_id)-1)],
-                rate_id=rates_id[random.randint(0, len(rates_id)-1)],
+                license_plate=license_plates[num + len(users_id)],
+                owner_id=users_id[random.randint(0, len(users_id) - 1)],
+                rate_id=rates_id[random.randint(0, len(rates_id) - 1)],
                 # created_at="2024-07-26T23:03:29.641Z",
                 # updated_at="2024-07-26T23:03:29.641Z",
                 # created_at=datetime.datetime.now(),

@@ -1,25 +1,60 @@
-from faker import Faker
+import random
+from datetime import datetime, timedelta
+
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
 
 from src.database.db import get_db
-from src.models.models import Vehicle, User, Rate, Parking_session
-
-import random
-# import datetime
-
-fake_data: Faker = Faker(["uk_UA", "en_US"])
+from src.models.models import Vehicle, Parking_session
 
 
-async def seed_sessions(num_sessions: int = 100, db: AsyncSession = Depends(get_db)):
+def random_date_in():
+
+    # Поточна дата та час
+    date_ = datetime.now()
+
+    # Випадкове число днів від 1 до 30 (або 31)
+    random_days = timedelta(days=random.randint(1, 31))
+
+    # Випадковий проміжок часу (години, хвилини, секунди)
+    random_hours = timedelta(hours=random.randint(0, 23))
+    random_minutes = timedelta(minutes=random.randint(0, 59))
+    random_seconds = timedelta(seconds=random.randint(0, 59))
+
+    # Віднімаємо цей проміжок часу від поточної дати та часу
+    new_datetime = date_ - random_days - random_hours - random_minutes - random_seconds
+
+    # print("Нова дата та час:", new_datetime)
+    return new_datetime
+
+
+def random_date_out(date_in_):
+    # Випадковий проміжок часу від 15 хвилин до 2 днів
+    random_time = timedelta(minutes=random.randint(15, 60 * 24 * 2))
+
+    # Додамо цей випадковий проміжок часу до попередньо обчисленої нової дати та часу
+    new_datetime_with_random_time = date_in_ + random_time
+
+    # Перевірка, щоб нова дата була не більше ніж поточний час
+    current_datetime = datetime.now()
+    if new_datetime_with_random_time > current_datetime:
+        new_datetime_with_random_time = current_datetime
+
+    # Ось ваш об'єкт datetime.datetime:
+    # print("Нова дата та час:", new_datetime_with_random_time)
+    return new_datetime_with_random_time
+
+
+async def seed_sessions(num_sessions: int = 20, left_in: int = 3, db: AsyncSession = Depends(get_db)):
     """
-    генерація кількох фейкових sessions зі списку
+    генерація кількох фейкових sessions 
     """
     print("sessions")
-    result = await db.execute(select(Parking_session))
-    number_vehicle = len(result.scalars().all())
-    print(f"{number_vehicle = }")
+    # видаляти дані з таблиці? поки що ні
+    # result = await db.execute(select(Parking_session))
+    # number_vehicle = len(result.scalars().all())
+    # print(f"{number_vehicle = }")
     # if number_vehicle > 0:
     #     delete_stmt = delete(Parking_session)
     #     await db.execute(delete_stmt)
@@ -31,56 +66,25 @@ async def seed_sessions(num_sessions: int = 100, db: AsyncSession = Depends(get_
     for vehicle in vehicles:
         vehicles_id.append(vehicle.id)
     vehicles_id = list(set(vehicles_id))
-    # print(f"{vehicles = }")
-    print(f"{vehicles_id = }")
-    print(f"{len(vehicles_id) = }")
+    # print(f"{vehicles_id = }")
+    # print(f"{len(vehicles_id) = }")
+    # print(f"{min(vehicles_id) = }")
+    # print(f"{max(vehicles_id) = }")
 
-    # result = await db.execute(select(Rate))
-    # rates = result.scalars().all()
-    # rates_id = []
-    # for rate in rates:
-    #     rates_id.append(rate.id)
-    # rates_id = list(set(rates_id))
-    # # print(f"{rates = }")
-    # # print(f"{rates_id = }")
-    # # print(f"{len(rates_id) = }")
+    for i in range(num_sessions):
+        rnd_ = random.randint(1, len(vehicles_id)) - 1
+        vehicle_id = vehicles_id[rnd_]
 
-    # print(f"{license_plates = }")
+        date_in = random_date_in()
+        date_out = random_date_out(date_in)
 
-    # i = 0
-    # for user_id in users_id:
-    #     i += 1
-    #     # print(f"{i = }")
-    #     # owner_id = user_id
-    #     # license_plate = license_plates[i]
-    #     # print(f"{owner_id = } <--> {license_plate = }")
-    #     new_vehicle = Vehicle(
-    #         license_plate=license_plates[i],
-    #         owner_id=user_id,
-    #         rate_id=rates_id[random.randint(0, len(rates_id)-1)],
-    #         # created_at="2024-07-26T23:03:29.641Z",
-    #         # updated_at="2024-07-26T23:03:29.641Z",
-    #         # created_at=datetime.datetime.now(),
-    #     )
-    #     db.add(new_vehicle)
-    #     await db.commit()
-    #     await db.refresh(new_vehicle)
+        new_session = Parking_session(
+            vehicle_id=vehicle_id,
+            created_at=date_in,
+            # останні left_in ще не виїхали з парковки
+            updated_at=date_out if i < (num_sessions - left_in) else None,
+        )
 
-    # # print(f"{len(license_plates) = }")
-    # # print(f"{len(users_id) = }")
-    # if len(license_plates) > len(users_id):
-    #     num_additional_vehicles = len(license_plates) - len(users_id)-3 # 3 шт
-    #     for num in range(1, num_additional_vehicles):
-    #         # print(license_plates[num+len(users_id)])
-    #         # print(users_id[random.randint(0, len(users_id)-1)])
-    #         new_vehicle = Vehicle(
-    #             license_plate=license_plates[num+len(users_id)],
-    #             owner_id=users_id[random.randint(0, len(users_id)-1)],
-    #             rate_id=rates_id[random.randint(0, len(rates_id)-1)],
-    #             # created_at="2024-07-26T23:03:29.641Z",
-    #             # updated_at="2024-07-26T23:03:29.641Z",
-    #             # created_at=datetime.datetime.now(),
-    #         )
-    #         db.add(new_vehicle)
-    #         await db.commit()
-    #         await db.refresh(new_vehicle)
+        db.add(new_session)
+        await db.commit()
+        await db.refresh(new_session)
