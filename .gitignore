@@ -15,6 +15,7 @@ photo2tag.*
 photos.*
 ratings.*
 tags.*
+test.py
 
 # Distribution / packaging
 .Python
@@ -179,9 +180,6 @@ postgres-data
 contacts.py
 _deleted
 
-/tmp
-tmp
-tmp/
-tmp/*
+
 contour.jpg
 contour.*

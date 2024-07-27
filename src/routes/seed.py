@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
-from src.seed.users import seed_users, seed_basic_users
-# from src.seed.tags import seed_tags
-# from src.seed.photos import seed_photos
+from src.seed.users import seed_users
+from src.seed.rates import seed_rates
+from src.seed.vehicles import seed_vehicles
+from src.seed.sessions import seed_sessions
 # from src.seed.comments import seed_comments
 # from src.seed.ratings import seed_ratings
 # from src.seed.photo2tag import seed_photo_2_tag
@@ -11,24 +12,31 @@ from src.database.db import get_db
 router = APIRouter(prefix="/seed", tags=["seed"])
 
 
-@router.post("/basic_users")
-async def seed_fake_basic_users(db: AsyncSession = Depends(get_db)):
-    await seed_basic_users(db)
+@router.post("/users")
+async def seed_new_users(db: AsyncSession = Depends(get_db)):
+    await seed_users(db)
+    return {"message": "You have new fake Users - 10 pieces"}
+
+
+@router.post("/rates")
+async def seed_new_rates(base: int = 10, db: AsyncSession = Depends(get_db)):
+    await seed_rates(base, db)
     return {
-        "message": "You have 5 new fake users: admin, moderator, user, guest, banned"
+        "message": "You have rates: ['hourly', 'daily', 'monthly', 'custom']"
+    }
+
+@router.post("/vehicles")
+async def seed_new_vehicles(db: AsyncSession = Depends(get_db)):
+    await seed_vehicles(db)
+    return {
+        "message": "You have new vehicles"
     }
 
 
-@router.post("/fake_users")
-async def seed_fake_users(number_users: int = 3, db: AsyncSession = Depends(get_db)):
-    await seed_users(number_users, db)
-    return {"message": f"You have {number_users} new fake Users"}
-
-
-# @router.post("/fake_tags")
-# async def seed_fake_tags(number_tags: int = 10, db: AsyncSession = Depends(get_db)):
-#     await seed_tags(number_tags, db)
-#     return {"message": f"You have {number_tags} new fake Tags"}
+@router.post("/sessions")
+async def seed_num_sessions(num_sessions: int = 100, db: AsyncSession = Depends(get_db)):
+    await seed_sessions(num_sessions, db)
+    return {"message": f"You have {num_sessions} new fake Sessions"}
 
 
 # @router.post("/fake_photos")
@@ -57,13 +65,14 @@ async def seed_fake_users(number_users: int = 3, db: AsyncSession = Depends(get_
 #     return {"message": f"You have new fake Photos_2_Tags data"}
 
 
-# @router.post("/full_complect")
-# async def seed_fake_full_complect(db: AsyncSession = Depends(get_db)):
-#     await seed_basic_users(db)
-#     await seed_users(5, db)
+@router.post("/full_complect")
+async def seed_full_complect(db: AsyncSession = Depends(get_db)):
+    await seed_users(db)
+    await seed_rates(10, db)
+    await seed_vehicles(db)
 #     await seed_tags(10, db)
 #     await seed_photos(10, db)
 #     await seed_comments(50, db)
 #     await seed_ratings(db)
 #     await seed_photo_2_tag(db)
-#     return {"message": "You have complect fake data"}
+    return {"message": "You have complect fake data"}
