@@ -7,7 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.conf import messages
 from src.database.db import get_db
+
 from src.models.models import Role, User, Vehicle, Blacklist, Setting, Parking_session
+
 from src.schemas.vehicles import (
     BlacklistSchema,
     BLResposeSchema,
@@ -272,6 +274,7 @@ async def get_all_vehicles_reminder(db: AsyncSession):
         return vehicles
     else:
         return None
+
     
 async def get_vehicles_not_in_black_list(db: AsyncSession):
     """
@@ -322,6 +325,7 @@ async def free_parking_space(db: AsyncSession):
     num_vehicles_abonement = await get_vehicles_with_abonement(db)
     free_space = setting.capacity - num_vehicles_not_abonement - num_vehicles_abonement
     return free_space
+
 
 
 async def update_vehicle(

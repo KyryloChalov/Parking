@@ -15,13 +15,23 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.db import get_db
 from src.models.models import User, Role
-from src.schemas.vehicles import Info
+#<<<<<<< oleksandr
+# from src.schemas.vehicles import Info
+#=======
+from src.schemas.vehicles import (
+    Reminder,
+    VehicleResponse,
+)
+#>>>>>>> dev
 from src.services.auth import auth_service
 from src.conf import messages
 from src.conf.config import config
 from src.services.roles import RoleAccess
 from src.repository import vehicles as repositories_vehicles
+
 from src.services.email import send_email_by_license_plate, send_email_info
+
+
 
 router = APIRouter(prefix="/utilities", tags=["utilities"])
 
@@ -58,6 +68,7 @@ async def email_reminder(
         )
         return f"E-mails was sent to owner of vehicles"
     except Exception as e:
+
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Failed to send email: {e}")
     
 @router.post("/email_info")
