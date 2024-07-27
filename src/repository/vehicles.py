@@ -7,7 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.conf import messages
 from src.database.db import get_db
-from src.models.models import Role, User, Vehicle, Blacklist, Setting
+
+from src.models.models import Role, User, Vehicle, Blacklist, Setting, Parking_session
+
 from src.schemas.vehicles import (
     BlacklistSchema,
     BLResposeSchema,
@@ -208,14 +210,12 @@ async def update_vehicle_in_blacklist(
         stmt = select(Blacklist).filter_by(vehicle_id=vehicle.id)
         result = await db.execute(stmt)
         vehicle_bl = result.scalar_one_or_none()
-        print(vehicle_bl.reason)
         vehicle_bl.user_id = current_user.id
         if vehicle_new:
             vehicle_bl.vehicle_id = vehicle_new.id
 
         vehicle_bl.reason = body.reason
         vehicle_bl.updated_at = func.now()
-        print(vehicle_bl.reason)
         await db.commit()
         await db.refresh(vehicle_bl)
         return vehicle_bl
@@ -274,6 +274,58 @@ async def get_all_vehicles_reminder(db: AsyncSession):
         return vehicles
     else:
         return None
+
+    
+async def get_vehicles_not_in_black_list(db: AsyncSession):
+    """
+    The get_all_black_list function returns a list of all vehicles in the black_list.
+
+    :param limit: int: Limit the number of contacts returned
+    :param offset: int: Specify the offset of the first row to return
+    :param db: AsyncSession: Pass in the database session to use
+    :return: A list of vehicles in black list
+    """
+    blacklist_alias = aliased(Blacklist)
+    # outerjoin: Використовується для об'єднання таблиць, де в результаті включаються всі записи 
+    # з лівої таблиці (vehicles) та відповідні записи з правої таблиці (blacklists). Якщо в правій 
+    # таблиці немає відповідного запису, то всі колонки з правої таблиці будуть заповнені NULL.
+    # where(blacklist_alias.vehicle_id == None): Ця умова вибирає тільки ті записи, 
+    # де немає відповідного запису в таблиці blacklists, тобто автомобіль не знаходиться 
+    # в чорному списку.
+    stmt = (
+        select(Vehicle)
+        .where(Vehicle.owner_id != None)
+        .outerjoin(blacklist_alias, Vehicle.id == blacklist_alias.vehicle_id)
+        .where(blacklist_alias.vehicle_id == None)
+    )
+    result = await db.execute(stmt)
+    vehicles_without_black_list = result.scalars().all()
+    
+    return vehicles_without_black_list
+
+async def get_vehicles_with_abonement(db: AsyncSession):
+    stmt = select(func.count()).select_from(Vehicle).where(Vehicle.ended_at != None)
+    result: int = await db.execute(stmt)
+    num_vehicles_abonement = result.scalar()
+    return num_vehicles_abonement
+
+async def free_parking_space(db: AsyncSession):
+    stmt = (select(func.count())
+    .select_from(Parking_session)
+    .where(Parking_session.updated_at == None)
+    .outerjoin(Vehicle, Vehicle.id == Parking_session.vehicle_id)
+    .where(Vehicle.ended_at == None)
+    )
+    result: int = await db.execute(stmt)
+    num_vehicles_not_abonement = result.scalar()
+    print(num_vehicles_not_abonement)
+    stmt = select(Setting)
+    result = await db.execute(stmt)
+    setting = result.scalar_one_or_none()
+    num_vehicles_abonement = await get_vehicles_with_abonement(db)
+    free_space = setting.capacity - num_vehicles_not_abonement - num_vehicles_abonement
+    return free_space
+
 
 
 async def update_vehicle(

@@ -15,16 +15,23 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.db import get_db
 from src.models.models import User, Role
+#<<<<<<< oleksandr
+# from src.schemas.vehicles import Info
+#=======
 from src.schemas.vehicles import (
     Reminder,
     VehicleResponse,
 )
+#>>>>>>> dev
 from src.services.auth import auth_service
 from src.conf import messages
 from src.conf.config import config
 from src.services.roles import RoleAccess
 from src.repository import vehicles as repositories_vehicles
-from src.services.email import send_email_by_license_plate
+
+from src.services.email import send_email_by_license_plate, send_email_info
+
+
 
 router = APIRouter(prefix="/utilities", tags=["utilities"])
 
@@ -61,4 +68,52 @@ async def email_reminder(
         )
         return f"E-mails was sent to owner of vehicles"
     except Exception as e:
-        raise HTTPException(detail=f"Failed to send email: {e}")
+
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Failed to send email: {e}")
+    
+@router.post("/email_info")
+async def email_info(
+    body: Info,
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(auth_service.get_current_user),
+):
+    if user.role != Role.admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=messages.USER_NOT_HAVE_PERMISSIONS,
+        )
+    vehicles = await repositories_vehicles.get_vehicles_not_in_black_list(db)
+    if vehicles is None:
+         raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail=messages.VEHICLE_NOT_FOUND)
+    
+    try:
+        for v in vehicles:
+            user_vehicle = await repositories_vehicles.get_user_by_license_plate(
+                v.license_plate, db)
+            # print(user_vehicle)
+            background_tasks.add_task(
+            send_email_info,
+            user_vehicle.email,
+            user_vehicle.name,
+            body.subject,
+            body.info,
+        )
+        return f"E-mails was sent to owner of vehicles"
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Failed to send email: {e}")
+    
+@router.post("/parking_place_abonement")
+async def parking_place_abonement(
+    db: AsyncSession = Depends(get_db),
+):
+    num_vehicles_abonement = await repositories_vehicles.get_vehicles_with_abonement(db)
+    return f'{num_vehicles_abonement}'
+
+@router.post("/fre_parking_place")
+async def parking_place_abonement(
+    db: AsyncSession = Depends(get_db),
+):
+    num_free = await repositories_vehicles.free_parking_space(db)
+    return f'Кількість вільних паркомісць {num_free}'
