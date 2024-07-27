@@ -126,9 +126,6 @@ class Parking_session(Base, Datefield):
     vehicle_id: Mapped[int] = mapped_column(
         ForeignKey("vehicles.id"), nullable=False
     )
-    total_cost: Mapped[int] = mapped_column(Integer, nullable=False)
-    empty_place: Mapped[int] = mapped_column(Integer, nullable=False)
-
 
 class Payment(Base):
     __tablename__ = "payments"

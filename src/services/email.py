@@ -117,3 +117,22 @@ async def send_email_by_license_plate(email: EmailStr, name: str, license_plate:
         await fm.send_message(message, template_name="email_user_vehicle.html")
     except ConnectionErrors as err:
         print(err)
+
+
+async def send_email_info(email: EmailStr, name: str, subject: str, info: str):
+    
+    try:
+        message = MessageSchema(
+            subject=subject,
+            recipients=[email],
+            template_body={
+                "username": name,
+                "info": info,
+            },
+            subtype=MessageType.html,
+        )
+
+        fm = FastMail(conf)
+        await fm.send_message(message, template_name="email_info.html")
+    except ConnectionErrors as err:
+        print(err)
