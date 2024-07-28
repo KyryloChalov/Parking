@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     PG_DOMAIN: str
 
     DB_URL: str
-    TEST_DB_URL: str
+    # TEST_DB_URL: str
 
     SECRET_KEY_JWT: str
     ALGORITHM: str

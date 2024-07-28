@@ -8,7 +8,6 @@ services:
     image: postgres
     environment:
       POSTGRES_DB: ${PG_DB}
-      TEST_POSTGRES_DB: ${TEST_PG_DB}
       POSTGRES_USER: ${PG_USER}
       POSTGRES_PASSWORD: ${PG_PASSWORD}
     ports:
