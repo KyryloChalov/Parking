@@ -65,3 +65,4 @@ ACCESS_TOKEN_TIME_LIVE = 30
 #     peacock = "art:peacock"
 #     primavera = "art:primavera"
 #     quartz = "art:quartz"
+DAYS_IN_MONTH = 30
