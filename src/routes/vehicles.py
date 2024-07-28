@@ -226,20 +226,23 @@ async def email_license_plate(
 
 
 @router.post(
-    "/",
+    "/{username}",
     status_code=status.HTTP_201_CREATED,
 )
 async def add_vehicle_to_database(
+    username: str,
     body: VehicleSchema,
     db: AsyncSession = Depends(get_db),
     user: User = Depends(auth_service.get_current_user),
 ):
-
     if user.role != Role.admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=messages.USER_NOT_HAVE_PERMISSIONS,
         )
+
+    user_id = await repositories_vehicles.find_user_id_by_username(username, db)
+
     exist_vehicle = await repositories_vehicles.get_vehicle_by_plate(
         body.license_plate, db
     )
@@ -249,7 +252,7 @@ async def add_vehicle_to_database(
             detail=messages.LICENSE_PLATE_NOT_UNIQUE,
         )
 
-    vehicle_new = await repositories_vehicles.add_to_DB(body, user, db)
+    vehicle_new = await repositories_vehicles.add_to_DB(body, user_id, db)
     return vehicle_new
 
 
@@ -317,6 +320,7 @@ async def get_all_vehicles(
 
     vehicles = await repositories_vehicles.get_all_vehicles(limit, offset, db)
     return vehicles
+
 
 @router.get(
     "/reminder",

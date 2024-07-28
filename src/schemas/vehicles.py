@@ -38,13 +38,14 @@ class BlacklistSchema(BaseModel):
 class Reminder(BaseModel):
     days: int
 
+
 class Info(BaseModel):
     subject: str
-    info : str
+    info: str
+
 
 class VehicleSchema(BaseModel):
     license_plate: str = Field(max_length=LICENSE_PLATE_MAX_LENGTH)
-    owner_id: int | None
     rate_id: int
     created_at: datetime
     # updated_at: datetime | None
