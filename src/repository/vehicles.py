@@ -263,6 +263,15 @@ async def add_to_DB(license_plate, rate_id, user_id: int, db: AsyncSession):
     await db.refresh(new_license_plate)
     return new_license_plate
 
+async def add_vehicle_to_db_auto(license_plate: str, db: AsyncSession):
+    new_vehicle = Vehicle(
+        license_plate=license_plate, created_at=datetime.now(), rate_id=1
+    )
+    db.add(new_vehicle)
+    await db.commit()
+    await db.refresh(new_vehicle)
+    return new_vehicle
+
 
 async def get_all_vehicles(limit: int, offset: int, db: AsyncSession):
 
@@ -360,9 +369,3 @@ async def update_vehicle(
             raise e
 
         return vehicle
-
-
-#     else:
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND, detail="Vehicle not found."
-#         )

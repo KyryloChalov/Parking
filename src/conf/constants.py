@@ -17,21 +17,32 @@ RATE_NAME_MAX_LENGHT = 50
 COMMENT_MAX_LENGTH = 250
 MESSAGE_MAX_LENGTH = 250
 
-# COMMENT_MIN_LENGTH = 5
-# COMMENT_MAX_LENGTH = 255
+NOT_NUMBER = [
+    "UA",
+    "JA",
+    "11",
+    "10",
+    "16",
+    "RXETD",
+    "21",
+    "22",
+    "I",
+    "Q",
+    "X",
+    "II",
+    "AS",
+    "F923",
+    "SS00",
+    "RANGEROVER",
+    "RANGE",
+    "ROVER",
+    "KIA",
+]
 
-# RATING_MIN_VALUE = 1
-# RATING_MAX_VALUE = 5
-# RATING_DECIMAL_DIGITS = 2
+IMAGES = []
+IMAGE_PATH = ''
+# IMAGE_PATH_LENGTH = 250
 
-# TAG_MIN_LENGTH = 5
-# TAG_MAX_LENGTH = 30
-# TAGS_MAX_NUMBER = 5
-
-# PHOTO_PATH_LENGTH = 250
-# TRANSFORM_PATH_LENGTH = 250
-# PHOTO_MIN_DESCRIPTION_LENGTH = 5
-# PHOTO_MAX_DESCRIPTION_LENGTH = 250
 AVATAR_PATH_LENGTH = 250
 
 # ALLOWED_CROP_MODES = ("fill", "thumb", "fit", "limit", "pad", "scale", None)

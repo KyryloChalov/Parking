@@ -42,7 +42,7 @@ class Setting (Base):
 class Role(enum.Enum):
     admin: str = "admin"
     user: str = "user"
-    guest: str = "guest"
+    operator: str = "operator"
 
 class Datefield:
     created_at: Mapped[date] = mapped_column("created_at", DateTime, default=func.now())
