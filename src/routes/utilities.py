@@ -17,18 +17,15 @@ import pandas as pd
 
 from src.database.db import get_db
 from src.models.models import User, Role
+
 from src.repository.utilities import get_parking_data
 
-# <<<<<<< oleksandr
-# from src.schemas.vehicles import Info
-# =======
 from src.schemas.vehicles import (
     Reminder,
     VehicleResponse,
-    Info,
+    Info
 )
 
-# >>>>>>> dev
 from src.services.auth import auth_service
 from src.conf import messages
 from src.conf.config import config
