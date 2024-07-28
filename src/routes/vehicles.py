@@ -252,7 +252,9 @@ async def add_vehicle_to_database(
             detail=messages.LICENSE_PLATE_NOT_UNIQUE,
         )
 
-    vehicle_new = await repositories_vehicles.add_to_DB(body, user_id, db)
+    vehicle_new = await repositories_vehicles.add_to_DB(
+        body.license_plate, body.rate_id, user_id, db
+    )
     return vehicle_new
 
 
