@@ -47,6 +47,7 @@ def verify_image(image: bytes) -> bool:
     return True
 
 
+# |Function for manual_in
 async def find_vehicle_in_blacklist(license_plate: str, db: AsyncSession):
     query = (
         select(Blacklist).join(Vehicle).filter(Vehicle.license_plate == license_plate)
