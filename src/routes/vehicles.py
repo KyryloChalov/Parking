@@ -225,6 +225,7 @@ async def email_license_plate(
         raise HTTPException(detail=f"Failed to send email: {e}")
 
 
+# A little changes
 @router.post(
     "/{username}",
     status_code=status.HTTP_201_CREATED,
@@ -252,7 +253,9 @@ async def add_vehicle_to_database(
             detail=messages.LICENSE_PLATE_NOT_UNIQUE,
         )
 
-    vehicle_new = await repositories_vehicles.add_to_DB(body, user_id, db)
+    vehicle_new = await repositories_vehicles.add_to_DB(
+        body.license_plate, body.rate_id, user_id, db
+    )
     return vehicle_new
 
 
