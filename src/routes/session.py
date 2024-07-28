@@ -36,6 +36,7 @@ async def in_session(image: UploadFile = File(...), db: AsyncSession = Depends(g
 #     return {"session_id": session.id}
 
 
+#  Manual_in
 @router.post("/manual_in")
 async def manual_in(
     license_plate: str,

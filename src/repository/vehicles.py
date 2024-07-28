@@ -253,6 +253,7 @@ async def get_user_by_license_plate(license_plate: str, db: AsyncSession):
     return user_vehicle
 
 
+# Some changes in arguments
 async def add_to_DB(license_plate, rate_id, user_id: int, db: AsyncSession):
     new_license_plate = Vehicle(
         license_plate=license_plate, owner_id=user_id, rate_id=rate_id
