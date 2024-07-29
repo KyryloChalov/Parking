@@ -13,7 +13,7 @@ from src.repository import vehicles as repositories_vehicles
 from src.services.auth import auth_service
 
 router = APIRouter(prefix="/session", tags=["session"])
-access_to_route_all = RoleAccess([Role.admin, Role.operator])
+access_to_route_all = RoleAccess([Role.admin])
 
 LICENSE_PLATE_REGEX = re.compile(r"^[A-Za-zА-Яа-я]{2}\d{4}[A-Za-zА-Яа-я]{2}$")
 

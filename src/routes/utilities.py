@@ -139,8 +139,10 @@ async def export_parking_data(
     db: AsyncSession = Depends(get_db),
 ):
     data = await get_parking_data(start_date, end_date, db)
+    print(f"{data = }")
 
     df = pd.DataFrame(data)
+    print(f"1. {df = }")
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     export_dir = "exports"
 
@@ -150,5 +152,6 @@ async def export_parking_data(
 
     csv_file = os.path.join(export_dir, f"parking_data_{timestamp}.csv")
     df.to_csv(csv_file, index=False)
+    print(f"2. {df = }")
 
     return FileResponse(path=csv_file, filename=csv_file, media_type="text/csv")
