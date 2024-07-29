@@ -8,7 +8,7 @@ from src.database.db import get_db
 from src.services.use_model import processing
 
 router = APIRouter(prefix="/session", tags=["session"])
-access_to_route_all = RoleAccess([Role.admin, Role.operator])
+access_to_route_all = RoleAccess([Role.admin])
 
 
 @router.post("/in", dependencies=[Depends(access_to_route_all)])
@@ -17,7 +17,7 @@ async def in_session(image: UploadFile = File(...), db: AsyncSession = Depends(g
 
     number, recognize = processing(image_bytes, echo=False, log_on=False)
     if not recognize:
-        raise HTTPException(status_code=406, detail="Image verification failed")
+        raise HTTPException(status_code=406, detail=f"Image verification failed - {number}")
 
     result = await session.create_session(number, db)
     return {"session_id": result.id, "plate_number": number}
@@ -33,7 +33,7 @@ async def out_session(image: UploadFile = File(...), db: AsyncSession = Depends(
     image_bytes = await image.read()
     number, recognize = processing(image_bytes, echo=False, log_on=False)
     if not recognize:
-        raise HTTPException(status_code=406, detail="Image verification failed")
+        raise HTTPException(status_code=406, detail=f"Image verification failed - {number}")
     
     result = await session.close_session(number, db)
     return {"session_id": result.id, "plate_number": number}

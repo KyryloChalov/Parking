@@ -18,6 +18,13 @@ async def create_session(license_plate, db: AsyncSession):
     vehicle = await get_vehicle_by_plate(license_plate, db)
     if not vehicle:
         vehicle = await add_vehicle_to_db_auto(license_plate, db)
+    
+    stmt = select(Parking_session).where(Parking_session.vehicle_id == vehicle.id)
+    result = await db.execute(stmt)
+    vehicle_in_parking = result.scalar_one_or_none()
+    if vehicle_in_parking:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Entrance closed. Auto in the parking yet!')
+    
     stmt = Parking_session(   
         vehicle_id=vehicle.id,
     )

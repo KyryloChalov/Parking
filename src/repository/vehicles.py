@@ -278,6 +278,11 @@ async def get_all_vehicles(limit: int, offset: int, db: AsyncSession):
     vehicles = await db.execute(stmt)
     return vehicles.scalars().all()
 
+async def get_vehicles_abonement(limit: int, offset: int, db: AsyncSession):
+
+    stmt = select(Vehicle).where(Vehicle.ended_at != None).offset(offset).limit(limit)
+    vehicles = await db.execute(stmt)
+    return vehicles.scalars().all()
 
 async def get_all_vehicles_reminder(db: AsyncSession):
     stmt = select(Setting)
@@ -322,7 +327,7 @@ async def get_vehicles_not_in_black_list(db: AsyncSession):
     return vehicles_without_black_list
 
 
-async def get_vehicles_with_abonement(db: AsyncSession):
+async def get_num_vehicles_with_abonement(db: AsyncSession):
     stmt = select(func.count()).select_from(Vehicle).where(Vehicle.ended_at != None)
     result: int = await db.execute(stmt)
     num_vehicles_abonement = result.scalar()

@@ -62,6 +62,25 @@ async def get_all_black_list(
 
     return black_list
 
+@router.get(
+    "/all_abonement",
+    response_model=list[VehicleResponse],
+    dependencies=[Depends(access_to_route_all)],
+)
+async def get_all_vehicles_on_abonement(
+    limit: int = Query(10, ge=10, le=500),
+    offset: int = Query(0, ge=0),
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(auth_service.get_current_user),
+):
+    # if user.role != Role.admin:
+    #     print(user.role)
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail=messages.USER_NOT_HAVE_PERMISSIONS,
+    #     )
+    vehicles = await repositories_vehicles.get_vehicles_abonement(limit, offset, db)
+    return vehicles
 
 @router.get(
     "/blacklist/owners",
@@ -263,7 +282,7 @@ async def get_license_plate_info(
     user: User = Depends(auth_service.get_current_user),
 ):
 
-    if user.role != Role.admin:
+    if user.role != Role.admin or user.role != Role.user:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=messages.USER_NOT_HAVE_PERMISSIONS,
@@ -305,7 +324,6 @@ async def update_car_info(
         raise HTTPException(status_code=409, detail=messages.LICENSE_PLATE_NOT_UNIQUE)
     return vehicle
 
-
 @router.get(
     "/",
     response_model=list[VehicleResponse],
@@ -320,7 +338,6 @@ async def get_all_vehicles(
 
     vehicles = await repositories_vehicles.get_all_vehicles(limit, offset, db)
     return vehicles
-
 
 @router.get(
     "/reminder",
