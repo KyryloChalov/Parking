@@ -12,6 +12,7 @@ router = APIRouter(prefix="/seed", tags=["seed"])
 
 @router.post("/full_complect")
 async def seed_full_complect(db: AsyncSession = Depends(get_db)):
+    await seed_settings(db)
     await seed_users(db)
     await seed_rates(10, db)
     await seed_vehicles(db)

@@ -6,7 +6,8 @@ from sqlalchemy.future import select
 from fastapi import HTTPException, status
 
 from src.repository.vehicles import get_vehicle_in_black_list, get_vehicle_by_plate, add_vehicle_to_db_auto
-from src.models.models import Parking_session
+# from src.models.models import Parking_session
+from src.models.models import Vehicle, Parking_session, Blacklist, Rate
 from src.conf import messages
 from src.schemas.session import SessionCreate, SessionClose
 # <<<<<<< oleksandr
