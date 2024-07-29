@@ -6,13 +6,21 @@ from sqlalchemy.future import select
 from fastapi import HTTPException, status
 
 from src.repository.vehicles import get_vehicle_in_black_list, get_vehicle_by_plate, add_vehicle_to_db_auto
+# <<<<<<< oleksandr
+from src.models.models import Parking_session
+from src.conf import messages
+# from src.schemas.session import SessionCreate, SessionClose
+
+
+# =======
 # from src.models.models import Parking_session
 from src.models.models import Vehicle, Parking_session, Blacklist, Rate
-from src.conf import messages
+# from src.conf import messages
 from src.schemas.session import SessionCreate, SessionClose
 # <<<<<<< oleksandr
 
 
+# >>>>>>> dev
 async def create_session(license_plate, db: AsyncSession):
     vehicle = await get_vehicle_in_black_list(license_plate, db)
     if vehicle:
@@ -20,8 +28,19 @@ async def create_session(license_plate, db: AsyncSession):
     vehicle = await get_vehicle_by_plate(license_plate, db)
     if not vehicle:
         vehicle = await add_vehicle_to_db_auto(license_plate, db)
+# <<<<<<< oleksandr
+    
+    stmt = select(Parking_session).where(Parking_session.vehicle_id == vehicle.id)
+    result = await db.execute(stmt)
+    vehicle_in_parking = result.scalar_one_or_none()
+    if vehicle_in_parking:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Entrance closed. Auto in the parking yet!')
+    
     stmt = Parking_session(   
         vehicle_id=vehicle.id,
+# =======
+#     stmt = Parking_session(   
+#         vehicle_id=vehicle.id,
 # =======
 # import uuid
 # from datetime import datetime
@@ -36,6 +55,7 @@ async def create_session(license_plate, db: AsyncSession):
 #     session = DbSessionModel(
 #         license_plate=session_data.number, rate_id=1, created_at=datetime.now()
 # >>>>>>> dev
+# >>>>>>> dev
     )
     db.add(stmt)
     await db.commit()
@@ -43,7 +63,6 @@ async def create_session(license_plate, db: AsyncSession):
     return stmt
 
 
-# <<<<<<< oleksandr
 async def close_session(license_plate: str, db: AsyncSession):
     vehicle = await get_vehicle_in_black_list(license_plate, db)
     if vehicle:

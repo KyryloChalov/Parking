@@ -118,12 +118,12 @@ async def email_info(
 async def parking_place_abonement(
     db: AsyncSession = Depends(get_db),
 ):
-    num_vehicles_abonement = await repositories_vehicles.get_vehicles_with_abonement(db)
+    num_vehicles_abonement = await repositories_vehicles.get_num_vehicles_with_abonement(db)
     return f"{num_vehicles_abonement}"
 
 
-@router.post("/fre_parking_place")
-async def parking_place_abonement(
+@router.post("/free_parking_places")
+async def free_parking_places(
     db: AsyncSession = Depends(get_db),
 ):
     num_free = await repositories_vehicles.free_parking_space(db)

@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
@@ -59,6 +59,7 @@ class UserChangeRoleResponse(UserResponse):
 
 class AboutUser(UserResponse):
     license_plate: str | None
+    ended_at: date | None
 
 
 class TokenSchema(BaseModel):
