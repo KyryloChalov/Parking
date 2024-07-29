@@ -174,6 +174,7 @@ async def get_info_by_username(username: str, current_user: User, db: AsyncSessi
             User.role,
             User.created_at,
             Vehicle.license_plate,
+            Vehicle.ended_at
         )
         .outerjoin(Vehicle, User.id == Vehicle.owner_id)
     .where(User.username == username)
@@ -192,6 +193,7 @@ async def get_info_by_username(username: str, current_user: User, db: AsyncSessi
             role= u.role,
             created_at = u.created_at,
             license_plate= u.license_plate,
+            ended_at = u.ended_at
         )
         for u in user
         ]

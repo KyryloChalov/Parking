@@ -167,7 +167,7 @@ async def change_user_role(body: UserChangeRole, user_id: int = Path(), db: Asyn
     :return: A user object
     :doc-author: Trelent
     """
-    if body.role == Role.user:
+    if body.role == Role.user or body.role == Role.guest:
         user = await repositories_users.change_user_role(user_id, body, db, user)
         if user is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.USER_NOT_FOUND)
