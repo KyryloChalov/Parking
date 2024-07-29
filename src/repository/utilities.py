@@ -21,5 +21,10 @@ async def get_parking_data(start_date: datetime, end_date: datetime, db: AsyncSe
         .where(Payment.created_at >= start_date)
         .where(Payment.created_at <= end_date)
     )
+    # result = await db.execute(query)
+    # return result.all()
     result = await db.execute(query)
-    return result.all()
+    records = result.all()
+    print(f"1. {records = }")
+
+    return records

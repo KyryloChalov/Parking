@@ -16,6 +16,10 @@ from fastapi import (
 from sqlalchemy.ext.asyncio import AsyncSession
 import pandas as pd
 
+
+from sqlalchemy import select
+from src.models.models import Parking_session, Payment, Vehicle, User
+
 from src.database.db import get_db
 from src.models.models import User, Role
 
@@ -130,6 +134,33 @@ async def free_parking_places(
     return f"Кількість вільних паркомісць {num_free}"
 
 
+# @router.get("/export", response_class=FileResponse)
+# async def export_parking_data(
+#     start_date: datetime = Query(
+#         ..., description="Start date for the export (YYYY-MM-DD)"
+#     ),
+#     end_date: datetime = Query(..., description="End date for the export (YYYY-MM-DD)"),
+#     db: AsyncSession = Depends(get_db),
+# ):
+#     data = await get_parking_data(start_date, end_date, db)
+#     print(f"{data = }")
+
+#     df = pd.DataFrame(data)
+#     print(f"1. {df = }")
+#     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+#     export_dir = "exports"
+
+#     # Проверка наличия папки и создание её, если она не существует
+#     if not os.path.exists(export_dir):
+#         os.makedirs(export_dir)
+
+#     csv_file = os.path.join(export_dir, f"parking_data_{timestamp}.csv")
+#     df.to_csv(csv_file, index=False)
+#     print(f"2. {df = }")
+
+#     return FileResponse(path=csv_file, filename=csv_file, media_type="text/csv")
+
+
 @router.get("/export", response_class=FileResponse)
 async def export_parking_data(
     start_date: datetime = Query(
@@ -137,21 +168,38 @@ async def export_parking_data(
     ),
     end_date: datetime = Query(..., description="End date for the export (YYYY-MM-DD)"),
     db: AsyncSession = Depends(get_db),
+    user: User = Depends(auth_service.get_current_user),
 ):
-    data = await get_parking_data(start_date, end_date, db)
-    print(f"{data = }")
-
+    if user.role != Role.admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=messages.USER_NOT_HAVE_PERMISSIONS,
+        )
+    query = (
+        select(
+            Parking_session.id,
+            Vehicle.license_plate,
+            User.username,
+            Parking_session.created_at,
+            Parking_session.updated_at,
+            Payment.amount,
+            Payment.created_at,
+        )
+        .join(Vehicle, Parking_session.vehicle_id == Vehicle.id)
+        .join(User, Vehicle.owner_id == User.id)
+        .join(Payment, Payment.session_id == Parking_session.id)
+        .where(Payment.created_at >= start_date)
+        .where(Payment.created_at <= end_date)
+    )
+    result = await db.execute(query)
+    data = result.all()
+    # data = await get_parking_data(start_date, end_date, db)
     df = pd.DataFrame(data)
-    print(f"1. {df = }")
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     export_dir = "exports"
-
     # Проверка наличия папки и создание её, если она не существует
     if not os.path.exists(export_dir):
         os.makedirs(export_dir)
-
     csv_file = os.path.join(export_dir, f"parking_data_{timestamp}.csv")
     df.to_csv(csv_file, index=False)
-    print(f"2. {df = }")
-
     return FileResponse(path=csv_file, filename=csv_file, media_type="text/csv")
