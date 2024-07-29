@@ -179,17 +179,17 @@ async def export_parking_data(
         select(
             Parking_session.id,
             Vehicle.license_plate,
-            User.username,
+            # User.username,
             Parking_session.created_at,
             Parking_session.updated_at,
             Payment.amount,
             Payment.created_at,
         )
         .join(Vehicle, Parking_session.vehicle_id == Vehicle.id)
-        .join(User, Vehicle.owner_id == User.id)
+        # .join(User, Vehicle.owner_id == User.id)
         .join(Payment, Payment.session_id == Parking_session.id)
-        .where(Payment.created_at >= start_date)
-        .where(Payment.created_at <= end_date)
+        # .where(Payment.created_at >= start_date)
+        # .where(Payment.created_at <= end_date)
     )
     result = await db.execute(query)
     data = result.all()
@@ -203,3 +203,26 @@ async def export_parking_data(
     csv_file = os.path.join(export_dir, f"parking_data_{timestamp}.csv")
     df.to_csv(csv_file, index=False)
     return FileResponse(path=csv_file, filename=csv_file, media_type="text/csv")
+
+
+# @router.get("/export", response_class=FileResponse)
+# async def get_parking_data(start_date: datetime, end_date: datetime, db: AsyncSession):
+#     print(start_date)
+#     query = (
+#         select(
+#             Parking_session.id,
+#             Vehicle.license_plate,
+#             # User.username,
+#             Parking_session.created_at,
+#             Parking_session.updated_at,
+#             Payment.amount,
+#             Payment.created_at,
+#         ).join(Vehicle, Parking_session.vehicle_id == Vehicle.id)
+#         # .join(User, Vehicle.owner_id == User.id)
+#         .join(Payment, Payment.session_id == Parking_session.id)
+#         # .where(Payment.created_at >= start_date)
+#         # .where(Payment.created_at <= end_date)
+#     )
+#     result = await db.execute(query)
+#     records = result.all()
+#     return records
