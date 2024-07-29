@@ -1,11 +1,10 @@
-# Imagine photo app
+# Imagine Parking app
 
 ## Overview
 
-This project is a REST API backend for an image sharing platform. It provides various endpoints for
-user authentication, managing user profiles, uploading and managing photos, adding comments and ratings to photos, as
+This project is a REST API backend for ______. It provides various endpoints for
+user authentication, managing user profiles, _____, as
 well as a health checker endpoint to ensure the database's functionality.
-
 
 ## Main Features
 
@@ -21,49 +20,12 @@ well as a health checker endpoint to ensure the database's functionality.
   certain actions such as updating profiles or changing user roles. There are three roles: a regular user, a moderator,
   and an administrator.
 
-### Photo Management
-
-- **Upload Photos**: Users can upload images with descriptions to the platform, which are stored and managed securely.
-  They can add up to 5 tags to a photo.
-- **View All Photos**: All users can view a list of all uploaded photos on the platform.
-- **View Photo Details**: Users can view detailed information about each photo, including its title, description, upload
-  date, and unique link.
-- **Delete Own Photos**: Users can delete their own photos from the platform.
-- **Edit Photo Descriptions**: Users can edit the description of a photo.
-- **Photo Transformations**: Users can perform basic operations on photos enabled by the Cloudinary service. They can
-  create a link to the transformed image to view the photo in the form of a URL and a QR code. The created links are
-  stored on the server.
-- **Administrator Privileges**: Administrators can do all CRUD operations with users photos.
-
-### Comments
-
-- **Add Comments**: Users can add comments to photos, sharing their thoughts or feedback.
-- **View Comments**: All users can view comments on each photo.
-
-### Ratings
-
-- **Rate Photos**: Users can rate a photo from 1 to 5 stars. The rating is calculated as the average of the ratings of
-  all users. Users can rate a photo only once and cannot rate their own photos.
-- **View Average Ratings**: All users can see the average rating for each photo, helping them discover popular or
-  high-quality content.
-- **Moderator and Administrator Privileges**: Moderators and administrators can view and delete user ratings.
-
 ### Role-Based Access Control
 
 - **Fine-Grained Access Control**: Operations throughout the platform are filtered based on user roles, ensuring that
   only authorized users can perform specific actions.
-- **Administrator Privileges**: Administrators have elevated privileges, enabling them to manage users, photos,
-  comments, and ratings effectively. They can also make users inactive (ban). Inactive users cannot enter the
-  application.
-- **Moderator Roles**: Moderators have limited administrative privileges, allowing them to perform certain
-  administrative tasks such as managing comments or ratings.
-
-### Search and Filtering
-
-- **Photo Search**: Users can search for photos by keyword or tag. After searching, users can filter the results by
-  rating or date of addition.
-- **Moderator and Administrator Privileges**: Moderators and administrators can search and filter by users who have
-  added photos.
+- **Administrator Privileges**: _________
+- **Users Roles**: ________
 
 ### Health Checker
 
@@ -84,7 +46,7 @@ This section contains the description of the different ways you can install and/
 **Options:**
 
 1. **Installation by Cloning Git Repository**
-2. **Installation by Downloading and running [Docker Image](https://hub.docker.com/r/imagineteam/imageapp) from
+2. **Installation by Downloading and running [Docker Image](https://hub.docker.com/r/imagineteam/parkingapp) from
    dockerhub**
 3. **Run Already Deployed Application in a browser**
 
@@ -99,7 +61,6 @@ Detailed instructions for each option follow:
 - PostgreSQL (available in the Docker container or cloud-based)
 - Redis (available in the Docker container or cloud-based)
 - Mail account with SMTP server for sending emails
-- Cloudinary account for storing and editing photos
 
 **Steps:**
 
@@ -153,7 +114,7 @@ Detailed instructions for each option follow:
 
 ## Installation by Downloading Docker Image
 
-[Link](https://hub.docker.com/r/imagineteam/imageapp) to the image in the Docker hub repository
+[Link](https://hub.docker.com/r/imagineteam/parkingapp) to the image in the Docker hub repository
 
 **Prerequisites:**
 
@@ -161,7 +122,6 @@ Detailed instructions for each option follow:
 - PostgreSQL (available in the Docker container or cloud-based)
 - Redis (available in the Docker container or cloud-based)
 - Mail account with SMTP server for sending emails
-- Cloudinary account for storing and editing photos
 
 **Steps:**
 
@@ -171,13 +131,13 @@ Detailed instructions for each option follow:
 2. **Download Docker Image**
 
    ```bash
-   docker pull imagineteam/imageapp
+   docker pull imagineteam/parkingapp
    ```
 
 3. **Start Docker Image**
 
    ```bash
-   docker run --env-file .env imagineteam/imageapp
+   docker run --env-file .env imagineteam/parkingapp
    ```
 
 4. **Open Application in Browser**
@@ -188,24 +148,24 @@ Detailed instructions for each option follow:
 
 ## Run Already Deployed Application
 
-The ImageApp is also deployed to the web and accessible through links below
+The parkingapp is also deployed to the web and accessible through links below
 
 **Deployed from Main Branch on GitHub (Automated Deployment using CI/CD)**
 
 - Index Page:
   ```
-  https://imagine-kyrylo.koyeb.app
+  https://________koyeb.app
   ```
 
 - Swagger Documentation:
   ```
-  https://imagine-kyrylo.koyeb.app/docs
+  https://________koyeb.app/docs
   ```
 
 **Deployed Pre-built Docker Image (Backup Link)**
 
   ```
-  https://image-app-oleksiy.koyeb.app/docs
+  https://_______oleksiy.koyeb.app/docs
   ```
 
 ## Technologies Used
@@ -215,8 +175,10 @@ The ImageApp is also deployed to the web and accessible through links below
 ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0.25-blue.svg)
 ![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-blue.svg)
 ![Redis](https://img.shields.io/badge/Cache-Redis-blue.svg)
-![Cloudinaty](https://img.shields.io/badge/Photo_Storage-Cloudinary-blue.svg)
-![Redis](https://img.shields.io/badge/Deploy-Koyeb-blue.svg)
+![Tensorflow](https://img.shields.io/badge/ML-Tensorflow-blue.svg)
+![OpenCV](https://img.shields.io/badge/ComputerVision-OpenCV-blue.svg)
+![Koyeb](https://img.shields.io/badge/Deploy-Koyeb-blue.svg)
+![DockeHub](https://img.shields.io/badge/Deploy-DockeHub-blue.svg)
 
 - **FastAPI**: A modern, fast (high-performance) web framework for building APIs with Python 3.7+ based on standard
   Python type hints.
@@ -226,17 +188,17 @@ The ImageApp is also deployed to the web and accessible through links below
   and managed cloud experience.
 - **Redis**: An in-memory data structure store used as a cache for rate limiting and storing user sessions.Upstash.com
   provides a user-friendly and scalable Redis cloud solution.
-- **Cloudinary**: A cloud-based image and video management solution for uploading, storing, managing, and delivering
-  images and videos for websites and apps.
 - **uvicorn**: A lightning-fast ASGI server implementation, using uvloop and httptools.
 - **Jinja2**: A full-featured template engine for Python, used for generating HTML templates.
 - **Pydantic**: Data validation and settings management using Python type annotations.
 - **FastAPI Limiter**: A rate limiting extension for FastAPI applications using Redis.
 - **CORS Middleware**: Cross-Origin Resource Sharing middleware for enabling CORS in FastAPI applications.
+- **Tensorflow**: ________
+- **OpenCV**: ________
 
 ## Team:
 
-**Meet the ImageApp Team!**
+**Meet the Team!**
 
 We're a passionate group of developers dedicated to building a powerful and user-friendly photo application. Here's how
 you can connect with each team member:
@@ -244,7 +206,6 @@ you can connect with each team member:
 * **Kyrylo Chalov** ([github.com/KyryloChalov](https://github.com/KyryloChalov))
 * **Oleksandr** ([github.com/1Oleksandr](https://github.com/1Oleksandr))
 * **Jurij Procenko** ([github.com/JurijProcenko](https://github.com/JurijProcenko))
-* **UreshiiSushi** ([github.com/UreshiiSushi](https://github.com/UreshiiSushi))
 * **Oleksiy M** ([github.com/OleksiyM](https://github.com/OleksiyM))
 
 **Feel free to check out their profiles to learn more about their contributions to the project!**
