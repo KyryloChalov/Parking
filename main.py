@@ -30,6 +30,9 @@ from src.conf import messages
 async def lifespan(app: FastAPI):
     if not config.REDIS_PASSWORD:
         config.REDIS_PASSWORD = None
+        redis_ssl = False
+    else:
+        redis_ssl = True
 
     r = await redis.Redis(
         host=config.REDIS_DOMAIN,
@@ -37,7 +40,7 @@ async def lifespan(app: FastAPI):
         password=config.REDIS_PASSWORD,  # з ним в мене зависає. чи треба тут пароль? - fix config.REDIS_PASSWORD = None
         encoding="utf-8",
         decode_responses=True,
-        ssl=True,
+        ssl=redis_ssl,
     )
 
     delay = await FastAPILimiter.init(r)
