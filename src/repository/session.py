@@ -117,3 +117,13 @@ async def create_parking_session(vehicle_id: int, db: AsyncSession):
     await db.commit()
     await db.refresh(new_session)
     return new_session
+
+# For manual_out
+async def close_parking_session(session_id: int, db: AsyncSession):
+    query = select(Parking_session).filter_by(id=session_id)
+    result = await db.execute(query)
+    session = result.scalar_one()
+    session.updated_at = datetime.now()
+    await db.commit()
+    await db.refresh(session)
+    return session
