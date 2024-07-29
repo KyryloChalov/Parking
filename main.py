@@ -135,7 +135,7 @@ async def healthchecker(db: AsyncSession = Depends(get_db)):
             raise HTTPException(
                 status_code=500, detail="Database is not configured correctly"
             )
-        return {"message": "Database 'Imagine' is healthy"}
+        return {"message": "Database 'Imagine' is healthy", "host": config.PG_DOMAIN}
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail="Error connecting to the database")
