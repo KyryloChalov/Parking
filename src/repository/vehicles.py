@@ -253,14 +253,24 @@ async def get_user_by_license_plate(license_plate: str, db: AsyncSession):
     return user_vehicle
 
 
-async def add_to_DB(body: VehicleSchema, user_id: int, db: AsyncSession):
-    license_plate = Vehicle(
-        license_plate=body.license_plate, owner_id=user_id, rate_id=body.rate_id
+# Some changes in arguments
+async def add_to_DB(license_plate, rate_id, user_id: int, db: AsyncSession):
+    new_license_plate = Vehicle(
+        license_plate=license_plate, owner_id=user_id, rate_id=rate_id
     )
-    db.add(license_plate)
+    db.add(new_license_plate)
     await db.commit()
-    await db.refresh(license_plate)
-    return f"{body.license_plate} add to database"
+    await db.refresh(new_license_plate)
+    return new_license_plate
+
+async def add_vehicle_to_db_auto(license_plate: str, db: AsyncSession):
+    new_vehicle = Vehicle(
+        license_plate=license_plate, created_at=datetime.now(), rate_id=1
+    )
+    db.add(new_vehicle)
+    await db.commit()
+    await db.refresh(new_vehicle)
+    return new_vehicle
 
 async def add_vehicle_to_db_auto(license_plate: str, db: AsyncSession):
     new_vehicle = Vehicle(

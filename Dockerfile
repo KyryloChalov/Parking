@@ -1,6 +1,6 @@
-FROM python:3.11.8-slim
+FROM python:3.11.9-slim
 
-LABEL authors="Imagine Team"
+LABEL authors="Imagine Pythons Team"
 
 ENV APP_HOME /app
 

@@ -12,10 +12,9 @@ from src.services.auth import auth_service
 async def seed_users(db: AsyncSession = Depends(get_db)):
     """
     генерація фейкових юзерів:
-    "admin" - 2 шт, "user" - 7 шт, "guest" - 1 шт
-    які мають відповідні імена "admin", "user", "guest"
-    та відповідні ролі "admin", "user", "guest"
-    "guest" відрізняється від "user" тим, що має confirmed=False
+    "admin" - 2 шт, "user" - 7 шт, "operator" - 1 шт
+    які мають відповідні імена "admin", "user", "operator"
+    та відповідні ролі "admin", "user", "operator"
     email'и - {"ім'я"}@gmail.com
     user'и мають імена виду user_N, де N - ціле число від 1 до 7,
     поле email має вигляд user_N@gmail.com
@@ -63,6 +62,23 @@ async def seed_users(db: AsyncSession = Depends(get_db)):
     user.role = "admin"
     await db.commit()
 
+
+    name_ = "operator"
+    # print(f"{name_ = }")
+    new_user = UserSchema(
+        name=name_,
+        username=name_,
+        email=name_ + "@gmail.com",
+        password="123456",
+    )
+    new_user.password = auth_service.get_password_hash(new_user.password)
+    await repositories_users.create_user(new_user, db)
+    await repositories_users.confirmed_email(new_user.email, db)
+    user = await repositories_users.get_user_by_email(new_user.email, db)
+    user.role = "admin" # тут поміняти на "operator" після алємбіка
+    await db.commit()
+
+
     for num in range(1, 8):
         name_ = f"user_{str(num)}"
         new_user = UserSchema(
@@ -75,17 +91,3 @@ async def seed_users(db: AsyncSession = Depends(get_db)):
         new_user.password = auth_service.get_password_hash(new_user.password)
         await repositories_users.create_user(new_user, db)
         await repositories_users.confirmed_email(new_user.email, db)
-
-    name_ = "guest"
-    # print(f"{name_ = }")
-    new_user = UserSchema(
-        name=name_,
-        username=name_,
-        email=name_ + "@gmail.com",
-        password="123456",
-    )
-    new_user.password = auth_service.get_password_hash(new_user.password)
-    await repositories_users.create_user(new_user, db)
-    user = await repositories_users.get_user_by_email(new_user.email, db)
-    user.role = "guest"
-    await db.commit()

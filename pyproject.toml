@@ -39,6 +39,7 @@ tensorflow = "2.16.1"
 keras = "^3.4.1"
 opencv-python = "^4.10.0.84"
 matplotlib = "^3.9.1"
+pandas = "^2.2.2"
 
 
 [tool.poetry.group.dev.dependencies]

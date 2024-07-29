@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from starlette.responses import FileResponse
 from fastapi import (
@@ -20,11 +21,7 @@ from src.models.models import User, Role
 
 from src.repository.utilities import get_parking_data
 
-from src.schemas.vehicles import (
-    Reminder,
-    VehicleResponse,
-    Info
-)
+from src.schemas.vehicles import Reminder, VehicleResponse, Info
 
 from src.services.auth import auth_service
 from src.conf import messages
@@ -145,7 +142,13 @@ async def export_parking_data(
 
     df = pd.DataFrame(data)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    csv_file = f"parking_data_{timestamp}.csv"
+    export_dir = "exports"
+
+    # Проверка наличия папки и создание её, если она не существует
+    if not os.path.exists(export_dir):
+        os.makedirs(export_dir)
+
+    csv_file = os.path.join(export_dir, f"parking_data_{timestamp}.csv")
     df.to_csv(csv_file, index=False)
 
     return FileResponse(path=csv_file, filename=csv_file, media_type="text/csv")
