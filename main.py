@@ -37,6 +37,7 @@ async def lifespan(app: FastAPI):
         password=config.REDIS_PASSWORD,  # з ним в мене зависає. чи треба тут пароль? - fix config.REDIS_PASSWORD = None
         encoding="utf-8",
         decode_responses=True,
+        ssl=True,
     )
 
     delay = await FastAPILimiter.init(r)
