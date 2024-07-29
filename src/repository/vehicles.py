@@ -341,6 +341,7 @@ async def get_num_vehicles_with_abonement(db: AsyncSession):
     stmt = select(func.count()).select_from(Vehicle).where(Vehicle.ended_at != None)
     result: int = await db.execute(stmt)
     num_vehicles_abonement = result.scalar()
+    print(f"{    num_vehicles_abonement = }")
     return num_vehicles_abonement
 
 
@@ -354,11 +355,11 @@ async def free_parking_space(db: AsyncSession):
     )
     result: int = await db.execute(stmt)
     num_vehicles_not_abonement = result.scalar()
-    print(num_vehicles_not_abonement)
+    print(f"{num_vehicles_not_abonement = }")
     stmt = select(Setting)
     result = await db.execute(stmt)
     setting = result.scalar_one_or_none()
-    num_vehicles_abonement = await get_vehicles_with_abonement(db)
+    num_vehicles_abonement = await get_num_vehicles_with_abonement(db)
     free_space = setting.capacity - num_vehicles_not_abonement - num_vehicles_abonement
     return free_space
 

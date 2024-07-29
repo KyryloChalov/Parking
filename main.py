@@ -65,6 +65,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 BASE_DIR = Path(__file__).parent
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 

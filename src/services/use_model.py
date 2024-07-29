@@ -31,10 +31,16 @@ TAB = "\t"
 PHOTO_FOLDER = "src/static/images/"
 MODEL_CASCADE = "src/models/haarcascade_ua_license_plate.xml"
 MODEL_KERAS = "src/models/model_ua_license_plate.keras"
+TMP_DIR = "tmp"
 TMP = "tmp/contour.jpg"
 BOX_COLOR = (220, 220, 220)
 
 
+# Проверка наличия папки и создание её, если она не существует
+if not os.path.exists(TMP_DIR):
+    os.makedirs(TMP_DIR)
+    
+    
 # Функції:
 
 
