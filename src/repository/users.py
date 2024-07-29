@@ -128,29 +128,34 @@ async def get_all_users(limit: int, offset: int, db: AsyncSession):
     # users = await db.execute(stmt)
     # return users.scalars().all()
     stmt = (
-        select(
-            User.id,
-            User.name,
-            User.username,
-            User.email,
-            User.role,
-            User.created_at,
-            Vehicle.license_plate,
+        (
+            select(
+                User.id,
+                User.name,
+                User.username,
+                User.email,
+                User.role,
+                User.created_at,
+                Vehicle.license_plate,
+                Vehicle.ended_at,
+            ).outerjoin(Vehicle, User.id == Vehicle.owner_id)
         )
-        .outerjoin(Vehicle, User.id == Vehicle.owner_id)
-    ).offset(offset).limit(limit)
+        .offset(offset)
+        .limit(limit)
+    )
     result = await db.execute(stmt)
     users = result.fetchall()
     # Форматування даних для повернення у відповідності до схеми
     formatted_result = [
         AboutUser(
-            id = u.id,
-            name= u.name,
-            username= u.username,
-            email= u.email,
-            role= u.role,
-            created_at = u.created_at,
-            license_plate= u.license_plate,
+            id=u.id,
+            name=u.name,
+            username=u.username,
+            email=u.email,
+            role=u.role,
+            created_at=u.created_at,
+            license_plate=u.license_plate,
+            ended_at=u.ended_at,
         )
         for u in users
     ]
@@ -164,6 +169,7 @@ async def get_user_by_username(username: str, db: AsyncSession):
     user = user.scalar_one_or_none()
     return user
 
+
 async def get_info_by_username(username: str, current_user: User, db: AsyncSession):
     stmt = (
         select(
@@ -174,34 +180,43 @@ async def get_info_by_username(username: str, current_user: User, db: AsyncSessi
             User.role,
             User.created_at,
             Vehicle.license_plate,
-            Vehicle.ended_at
+            Vehicle.ended_at,
         )
         .outerjoin(Vehicle, User.id == Vehicle.owner_id)
-    .where(User.username == username)
+        .where(User.username == username)
     )
     result = await db.execute(stmt)
     user = result.fetchall()
     if user:
         if user[0].id != current_user.id and current_user.role != Role.admin:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=messages.USER_NOT_HAVE_PERMISSIONS)
-    # Форматування даних для повернення у відповідності до схеми
-        formatted_result = [AboutUser(
-            id = u.id,
-            name= u.name,
-            username= u.username,
-            email= u.email,
-            role= u.role,
-            created_at = u.created_at,
-            license_plate= u.license_plate,
-            ended_at = u.ended_at
-        )
-        for u in user
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=messages.USER_NOT_HAVE_PERMISSIONS,
+            )
+        # Форматування даних для повернення у відповідності до схеми
+        formatted_result = [
+            AboutUser(
+                id=u.id,
+                name=u.name,
+                username=u.username,
+                email=u.email,
+                role=u.role,
+                created_at=u.created_at,
+                license_plate=u.license_plate,
+                ended_at=u.ended_at,
+            )
+            for u in user
         ]
     else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.NOT_CORRECT_USERNAME)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=messages.NOT_CORRECT_USERNAME
+        )
     return formatted_result
 
-async def update_user(user_id: int, body: UserUpdateSchema, db: AsyncSession, current_user: User):
+
+async def update_user(
+    user_id: int, body: UserUpdateSchema, db: AsyncSession, current_user: User
+):
     stmt = select(User).filter_by(id=user_id)
     user = await db.execute(stmt)
     user = user.scalar_one_or_none()
@@ -218,8 +233,11 @@ async def update_user(user_id: int, body: UserUpdateSchema, db: AsyncSession, cu
     else:
         print(messages.USER_NOT_HAVE_PERMISSIONS)
         return user
-    
-async def change_user_role(user_id: int, body: UserUpdateSchema, db: AsyncSession, current_user: User):
+
+
+async def change_user_role(
+    user_id: int, body: UserUpdateSchema, db: AsyncSession, current_user: User
+):
     """
     The change_user_role function changes the role of a user.
         Args:
@@ -227,7 +245,7 @@ async def change_user_role(user_id: int, body: UserUpdateSchema, db: AsyncSessio
             body (UserUpdateSchema): A schema containing information about what to change in the database.
             db (AsyncSession): An async session for interacting with our database.
             current_user(User): The currently logged in User object, used for checking permissions and roles.
-    
+
     :param user_id: uuid.UUID: Get the user from the database
     :param body: UserUpdateSchema: Validate the request body
     :param db: AsyncSession: Pass the database session to the function
@@ -244,17 +262,17 @@ async def change_user_role(user_id: int, body: UserUpdateSchema, db: AsyncSessio
             await db.commit()
             await db.refresh(user)
         return user
-            
-    
+
+
 # async def delete_user(user_id: int, db: AsyncSession, current_user: User):
-    
+
 #     """
 #     The delete_user function deletes a user from the database.
 #         Args:
 #             user_id (uuid): The id of the user to delete.
 #             db (AsyncSession): An async session object for interacting with the database.
 #             current_user (User): The currently logged in User object, used to determine if they have permission to delete this resource or not.
-    
+
 #     :param user_id: uuid.UUID: Get the user_id from the url
 #     :param db: AsyncSession: Pass the database session to the function
 #     :param current_user: User: Check if the user is an admin or not
@@ -271,4 +289,3 @@ async def change_user_role(user_id: int, body: UserUpdateSchema, db: AsyncSessio
 #     else:
 #         user.username = messages.USER_NOT_HAVE_PERMISSIONS
 #         return user
-

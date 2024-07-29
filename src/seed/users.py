@@ -63,7 +63,7 @@ async def seed_users(db: AsyncSession = Depends(get_db)):
     await db.commit()
 
 
-    name_ = "operator"
+    name_ = "guest"
     # print(f"{name_ = }")
     new_user = UserSchema(
         name=name_,
@@ -75,7 +75,7 @@ async def seed_users(db: AsyncSession = Depends(get_db)):
     await repositories_users.create_user(new_user, db)
     await repositories_users.confirmed_email(new_user.email, db)
     user = await repositories_users.get_user_by_email(new_user.email, db)
-    user.role = "admin" # тут поміняти на "operator" після алємбіка
+    user.role = "guest" # тут поміняти на "operator" після алємбіка
     await db.commit()
 
 
