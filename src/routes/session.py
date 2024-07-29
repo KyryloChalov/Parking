@@ -97,7 +97,45 @@ async def out_session(
     return {"session_id": session.id}
 
 
-@router.post("/manual_out", dependencies=[Depends(access_to_route_all)])
-async def manual_out_session(number: str, db: AsyncSession = Depends(get_db)):
-    session = await session_repo.close_session(SessionClose(number=number), db)
-    return {"session_id": session.id}
+# @router.post("/manual_out", dependencies=[Depends(access_to_route_all)])
+# async def manual_out_session(number: str, db: AsyncSession = Depends(get_db)):
+#     session = await session_repo.close_session(SessionClose(number=number), db)
+#     return {"session_id": session.id}
+
+
+@router.post("/manual_out")
+async def manual_out(
+    license_plate: str,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(auth_service.get_current_user),
+):
+    if not LICENSE_PLATE_REGEX.match(license_plate):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid license plate format. Must be 2 letters, 4 digits, 2 letters.",
+        )
+
+    blacklist_entry = await session_repo.find_vehicle_in_blacklist(license_plate, db)
+    if blacklist_entry:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Vehicle is in the blacklist.",
+        )
+
+    vehicle = await session_repo.find_vehicle_by_license_plate(license_plate, db)
+    if not vehicle:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Vehicle not found.",
+        )
+
+    open_session = await session_repo.find_open_session_by_vehicle_id(vehicle.id, db)
+    if not open_session:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="No open parking session found for this vehicle.",
+        )
+
+    closed_session = await session_repo.close_parking_session(open_session.id, db)
+
+    return {"session_id": closed_session.id}
