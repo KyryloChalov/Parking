@@ -118,7 +118,9 @@ async def email_info(
 async def parking_place_abonement(
     db: AsyncSession = Depends(get_db),
 ):
-    num_vehicles_abonement_ = await repositories_vehicles.get_num_vehicles_with_abonement(db)
+    num_vehicles_abonement_ = (
+        await repositories_vehicles.get_num_vehicles_with_abonement(db)
+    )
     return f"{num_vehicles_abonement_}"
 
 
@@ -137,10 +139,18 @@ async def export_parking_data(
     ),
     end_date: datetime = Query(..., description="End date for the export (YYYY-MM-DD)"),
     db: AsyncSession = Depends(get_db),
+    user: User = Depends(auth_service.get_current_user),
 ):
+
+    if user.role != Role.admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=messages.USER_NOT_HAVE_PERMISSIONS,
+        )
     data = await get_parking_data(start_date, end_date, db)
 
     df = pd.DataFrame(data)
+    print(df)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     export_dir = "exports"
 

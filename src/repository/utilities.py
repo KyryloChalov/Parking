@@ -9,14 +9,14 @@ async def get_parking_data(start_date: datetime, end_date: datetime, db: AsyncSe
         select(
             Parking_session.id,
             Vehicle.license_plate,
-            User.username,
+            # User.username,
             Parking_session.created_at,
             Parking_session.updated_at,
             Payment.amount,
             Payment.created_at,
         )
         .join(Vehicle, Parking_session.vehicle_id == Vehicle.id)
-        .join(User, Vehicle.owner_id == User.id)
+        # .join(User, Vehicle.owner_id == User.id)
         .join(Payment, Payment.session_id == Parking_session.id)
         .where(Payment.created_at >= start_date)
         .where(Payment.created_at <= end_date)
