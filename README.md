@@ -138,7 +138,7 @@ Model: "sequential_4"
 
 ![image](https://github.com/user-attachments/assets/5fa3170e-8c1b-41e3-b27f-f2020f2a3c15)
 
-Full model training process you can fing in this [Python Notebook](https://github.com/KyryloChalov/Parking/blob/dev/DS/notebook/model_ua_license_plate.ipynb)    
+The complete model training process can be found in this [Python Notebook](https://github.com/KyryloChalov/Parking/blob/dev/DS/notebook/model_ua_license_plate.ipynb)    
 
 ## Installation and Deployment
 
