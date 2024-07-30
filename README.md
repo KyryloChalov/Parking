@@ -78,12 +78,14 @@ health checker endpoint to ensure the database's functionality.
 - **CORS Middleware**: Cross-Origin Resource Sharing (CORS) middleware is implemented to allow controlled access to
   resources from different origins, enhancing security.
 
-## **Plate Number Recognition**
+## Plate Number Recognition
 
 **Overview**
+
 This section details the implementation and performance of the plate number recognition system. The system leverages a combination of image processing techniques and a deep learning model to accurately identify and extract license plate numbers from images.
 
 **Model Architecture and Training**
+
 * **Model Architecture:** A Convolutional Neural Network (CNN) is employed for character recognition. The model consists of multiple convolutional layers followed by max pooling layers to extract relevant features. Fully connected layers classify the extracted features into corresponding characters.
 * **Training Data:** The model is trained on a custom dataset of license plate images and their corresponding character labels. Data augmentation techniques like rotation, scaling, and shearing are applied to increase the dataset's diversity and improve generalization.
 * **Training Process:** The model is trained using categorical cross-entropy loss and Adam optimizer. Early stopping is implemented to prevent overfitting.
@@ -127,7 +129,7 @@ Model: "sequential_4"
 * **Visualization:** The system provides visualizations of the detected license plates and their corresponding recognized characters. 
 * **Error Analysis:** Common errors and their causes are analyzed to improve the system's performance.
 
-**Plots and images**
+**Plots**
 
 ![image](https://github.com/user-attachments/assets/f9fa9b11-c7da-4848-8205-53af0c931d4e)
 
@@ -216,7 +218,7 @@ Detailed instructions for each option follow:
    http://localhost:8000/docs/
    ```
 
-## Installation by Downloading Docker Image
+### Installation by Downloading Docker Image
 
 [Link](https://hub.docker.com/r/imagineteam/parkingapp) to the image in the Docker hub repository
 
@@ -252,7 +254,7 @@ Detailed instructions for each option follow:
    http://localhost:8000/docs/
    ```
 
-## Run Already Deployed Application
+### Run Already Deployed Application
 
 The parkingapp will be also deployed to the web and accessible through links below in the near future (in progress)
 
