@@ -1,10 +1,10 @@
-# Imagine Parking app
+# Imagine Parking App
 
 ## Overview
 
-This project is a REST API backend for ______. It provides various endpoints for
-user authentication, managing user profiles, _____, as
-well as a health checker endpoint to ensure the database's functionality.
+This project is a REST API backend for a parking management system. It provides various endpoints for user
+authentication, managing user profiles, handling parking sessions, payments, and more. Additionally, it includes a
+health checker endpoint to ensure the database's functionality.
 
 ## Main Features
 
@@ -17,15 +17,54 @@ well as a health checker endpoint to ensure the database's functionality.
 - **User Profile Management**: Users can update their profiles, including username, email, and password. They can also
   view and edit information about themselves through different routes.
 - **Role-Based Access Control**: Operations are filtered based on user roles, allowing only authorized users to perform
-  certain actions such as updating profiles or changing user roles. There are three roles: a regular user, a moderator,
-  and an administrator.
+  certain actions such as updating profiles or changing user roles. There are three roles: regular user, moderator, and
+  administrator.
+- **Password Management**: Users can reset and change their passwords.
 
 ### Role-Based Access Control
 
 - **Fine-Grained Access Control**: Operations throughout the platform are filtered based on user roles, ensuring that
   only authorized users can perform specific actions.
-- **Administrator Privileges**: _________
-- **Users Roles**: ________
+- **Administrator Privileges**: Administrators have the highest level of access, allowing them to manage users,
+  sessions, and payments.
+- **Users Roles**: Roles include regular user (client), operator, and administrator, each with different levels of
+  access and
+  permissions.
+
+### Vehicle Management
+
+- **Vehicle Blacklist Management**:
+    - Admins can add vehicles to a blacklist, preventing them from accessing parking spaces.
+    - Admins can view a list of blacklisted vehicles and their information.
+    - Admins can update blacklist entries for blacklisted vehicles.
+- **Vehicle Reminder System**:
+    - Admins can send email reminders to vehicle owners about upcoming parking session expirations.
+    - Reminders are based on a configurable number of days before the session ends.
+- **Vehicle Information Export**:
+    - Admins can export parking data (including parking sessions, payments, and vehicle information) to a CSV file for a
+      specified date range.
+    - The exported data can be used for further analysis or record-keeping purposes.
+- **Vehicle Abonement Status**:
+    - Admins can view a list of vehicles with active parking abonement.
+
+### Parking Management
+
+- **Session Management**: Operator can create, update, and close parking sessions.
+- **Payment Processing**: Operator can process payments for parking sessions, including checking for existing payments
+  and
+  calculating fees based on session durations and abonement statuses.
+- **Export Parking Data**: Administrators can export parking session data.
+- **View Parking Session Details**: Users can view details about their parking sessions.
+
+### Rate Management
+
+- **Create, Update, and Delete Rates**: Administrators can manage parking rates.
+- **Retrieve Rate Information**: Users can view rate details.
+
+### Settings Management
+
+- **Create, Update, and Delete Settings**: Administrators can manage system settings.
+- **Retrieve Settings**: Users can view system settings.
 
 ### Health Checker
 
@@ -41,18 +80,19 @@ well as a health checker endpoint to ensure the database's functionality.
 
 ## Installation and Deployment
 
-This section contains the description of the different ways you can install and/or deploy the Image application.
+This section contains the description of the different ways you can install and/or deploy the Imagine Parking
+application.
 
-**Options:**
+### Options:
 
 1. **Installation by Cloning Git Repository**
-2. **Installation by Downloading and running [Docker Image](https://hub.docker.com/r/imagineteam/parkingapp) from
-   dockerhub**
+2. **Installation by Downloading and running [Docker Image](https://hub.docker.com/r/imagineteam/parkingapp) from Docker
+   Hub**
 3. **Run Already Deployed Application in a browser**
 
 Detailed instructions for each option follow:
 
-## Installation by Cloning Git Repository
+### Installation by Cloning Git Repository
 
 **Prerequisites:**
 
@@ -68,18 +108,20 @@ Detailed instructions for each option follow:
     - Use `env.example` as a reference.
 
 2. **Set Up PostgreSQL and Redis**
-   You can choose either option:
-    - Use Docker Compose:
+    - You can choose either option:
+        - Use Docker Compose:
 
-      ```bash
-      docker compose --env-file .env up -d
-      ```
+          ```bash
+          docker compose --env-file .env up -d
+          ```
 
-      (You can modify `docker-compose.yml` to set additional variables.)
-
-    - Use your preferred cloud-based service for PostgreSQL and Redis.
+        - Use your preferred cloud-based service for PostgreSQL and Redis.
 
 3. **Clone the Repository**
+
+   ```bash
+   git clone https://github.com/KyryloChalov/Parking.git
+   ```
 
 
 4. **Install Dependencies**
@@ -137,6 +179,8 @@ Detailed instructions for each option follow:
 3. **Start Docker Image**
 
    ```bash
+   docker compose up -d
+   
    docker run --env-file .env imagineteam/parkingapp
    ```
 
@@ -148,25 +192,7 @@ Detailed instructions for each option follow:
 
 ## Run Already Deployed Application
 
-The parkingapp is also deployed to the web and accessible through links below
-
-**Deployed from Main Branch on GitHub (Automated Deployment using CI/CD)**
-
-- Index Page:
-  ```
-  https://________koyeb.app
-  ```
-
-- Swagger Documentation:
-  ```
-  https://________koyeb.app/docs
-  ```
-
-**Deployed Pre-built Docker Image (Backup Link)**
-
-  ```
-  https://_______oleksiy.koyeb.app/docs
-  ```
+The parkingapp will be also deployed to the web and accessible through links below in the near future (in progress)
 
 ## Technologies Used
 
@@ -177,8 +203,7 @@ The parkingapp is also deployed to the web and accessible through links below
 ![Redis](https://img.shields.io/badge/Cache-Redis-blue.svg)
 ![Tensorflow](https://img.shields.io/badge/ML-Tensorflow-blue.svg)
 ![OpenCV](https://img.shields.io/badge/ComputerVision-OpenCV-blue.svg)
-![Koyeb](https://img.shields.io/badge/Deploy-Koyeb-blue.svg)
-![DockeHub](https://img.shields.io/badge/Deploy-DockeHub-blue.svg)
+![DockerHub](https://img.shields.io/badge/Deploy-DockerHub-blue.svg)
 
 - **FastAPI**: A modern, fast (high-performance) web framework for building APIs with Python 3.7+ based on standard
   Python type hints.
@@ -193,8 +218,8 @@ The parkingapp is also deployed to the web and accessible through links below
 - **Pydantic**: Data validation and settings management using Python type annotations.
 - **FastAPI Limiter**: A rate limiting extension for FastAPI applications using Redis.
 - **CORS Middleware**: Cross-Origin Resource Sharing middleware for enabling CORS in FastAPI applications.
-- **Tensorflow**: ________
-- **OpenCV**: ________
+- **Tensorflow**: Used for machine learning tasks, such as vehicle license plate recognition.
+- **OpenCV**: Used for computer vision tasks, such as license plate segmentation and recognition
 
 ## Team:
 
