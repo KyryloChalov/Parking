@@ -128,16 +128,17 @@ Model: "sequential_4"
 * **Error Analysis:** Common errors and their causes are analyzed to improve the system's performance.
 
 **Plots and images**
+
 ![image](https://github.com/user-attachments/assets/f9fa9b11-c7da-4848-8205-53af0c931d4e)
 
 ![image](https://github.com/user-attachments/assets/15bddcd8-f4e9-43c4-834f-db1d1e040a59)
 
-![image](https://github.com/user-attachments/assets/f06951b9-c4eb-41c3-94bd-c788ec0f6c24)
 
 ### Recognition example
+
 ![image](https://github.com/user-attachments/assets/5fa3170e-8c1b-41e3-b27f-f2020f2a3c15)
 
-Full model training process you can fing in this Python Notebook    
+Full model training process you can fing in this [Python Notebook](https://github.com/KyryloChalov/Parking/blob/dev/DS/notebook/model_ua_license_plate.ipynb)    
 
 ## Installation and Deployment
 
