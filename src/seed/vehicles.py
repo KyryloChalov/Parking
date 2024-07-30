@@ -78,7 +78,9 @@ async def seed_vehicles(db: AsyncSession = Depends(get_db)):
         new_vehicle = Vehicle(
             license_plate=license_plates[i],
             owner_id=user_id,
-            rate_id=rates_id[random.randint(0, len(rates_id) - 1)],
+            # rate_id=rates_id[random.randint(0, len(rates_id) - 1)],
+            # останній з rates виключаємо з рандому
+            rate_id=rates_id[random.randint(0, len(rates_id) - 2)],
             # created_at="2024-07-26T23:03:29.641Z",
             # updated_at="2024-07-26T23:03:29.641Z",
             # created_at=datetime.datetime.now(),

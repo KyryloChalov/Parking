@@ -5,6 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from fastapi import HTTPException, status
 
+from sqlalchemy.sql import func
+
 from src.repository.vehicles import (
     get_vehicle_in_black_list,
     get_vehicle_by_plate,
@@ -71,7 +73,9 @@ async def close_session(license_plate: str, db: AsyncSession):
             detail="Session not found or already closed",
         )
 
-    session.updated_at = datetime.now()
+    # зробив час по Лондону (щоб був таки самий, як в create_session)
+    session.updated_at = func.now()
+    # session.updated_at = datetime.now() # видає місцевий час
     await db.commit()
     await db.refresh(session)
     return session
@@ -123,7 +127,9 @@ async def close_parking_session(session_id: int, db: AsyncSession):
     query = select(Parking_session).filter_by(id=session_id)
     result = await db.execute(query)
     session = result.scalar_one()
-    session.updated_at = datetime.now()
+    # зробив час по Лондону (щоб був таки самий, як в create_parking_session)
+    session.updated_at = func.now()
+    # session.updated_at = datetime.now() # видає місцевий час
     await db.commit()
     await db.refresh(session)
     return session

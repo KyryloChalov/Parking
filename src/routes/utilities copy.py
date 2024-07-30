@@ -122,9 +122,7 @@ async def email_info(
 async def parking_place_abonement(
     db: AsyncSession = Depends(get_db),
 ):
-    num_vehicles_abonement_ = (
-        await repositories_vehicles.get_num_vehicles_with_abonement(db)
-    )
+    num_vehicles_abonement_ = await repositories_vehicles.get_num_vehicles_with_abonement(db)
     return f"{num_vehicles_abonement_}"
 
 
@@ -186,7 +184,8 @@ async def export_parking_data(
             Parking_session.updated_at,
             Payment.amount,
             Payment.created_at,
-        ).join(Vehicle, Parking_session.vehicle_id == Vehicle.id)
+        )
+        .join(Vehicle, Parking_session.vehicle_id == Vehicle.id)
         # .join(User, Vehicle.owner_id == User.id)
         .join(Payment, Payment.session_id == Parking_session.id)
         # .where(Payment.created_at >= start_date)
