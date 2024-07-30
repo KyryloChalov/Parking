@@ -78,6 +78,67 @@ health checker endpoint to ensure the database's functionality.
 - **CORS Middleware**: Cross-Origin Resource Sharing (CORS) middleware is implemented to allow controlled access to
   resources from different origins, enhancing security.
 
+## **Plate Number Recognition**
+
+**Overview**
+This section details the implementation and performance of the plate number recognition system. The system leverages a combination of image processing techniques and a deep learning model to accurately identify and extract license plate numbers from images.
+
+**Model Architecture and Training**
+* **Model Architecture:** A Convolutional Neural Network (CNN) is employed for character recognition. The model consists of multiple convolutional layers followed by max pooling layers to extract relevant features. Fully connected layers classify the extracted features into corresponding characters.
+* **Training Data:** The model is trained on a custom dataset of license plate images and their corresponding character labels. Data augmentation techniques like rotation, scaling, and shearing are applied to increase the dataset's diversity and improve generalization.
+* **Training Process:** The model is trained using categorical cross-entropy loss and Adam optimizer. Early stopping is implemented to prevent overfitting.
+
+```bash
+Model: "sequential_4"
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
+┃ Layer (type)                    ┃ Output Shape           ┃       Param # ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│ conv2d_11 (Conv2D)              │ (None, 28, 28, 16)     │           448 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ max_pooling2d_11 (MaxPooling2D) │ (None, 14, 14, 16)     │             0 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ conv2d_12 (Conv2D)              │ (None, 14, 14, 32)     │         4,640 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ max_pooling2d_12 (MaxPooling2D) │ (None, 7, 7, 32)       │             0 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ conv2d_13 (Conv2D)              │ (None, 7, 7, 64)       │        18,496 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ max_pooling2d_13 (MaxPooling2D) │ (None, 3, 3, 64)       │             0 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ flatten_4 (Flatten)             │ (None, 576)            │             0 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dense_4 (Dense)                 │ (None, 36)             │        20,772 │
+└─────────────────────────────────┴────────────────────────┴───────────────┘
+ Total params: 133,070 (519.81 KB)
+ Trainable params: 44,356 (173.27 KB)
+ Non-trainable params: 0 (0.00 B)
+ Optimizer params: 88,714 (346.54 KB)
+```
+
+**Working in the App**
+1. **Image Preprocessing:** The input image is preprocessed to enhance the visibility of the license plate. This includes grayscale conversion, noise reduction, and edge detection.
+2. **Plate Detection:** Using Haar cascades, the system detects regions of interest that likely contain license plates.
+3. **Character Segmentation:** The detected plate region is segmented into individual characters.
+4. **Character Recognition:** Each segmented character is fed into the trained CNN model to predict its corresponding class.
+5. **Plate Number Reconstruction:** The predicted characters are concatenated to form the final license plate number.
+
+**Accuracy and Results**
+* **Accuracy Metrics:** The model's performance is evaluated using metrics such as accuracy, precision, recall, and F1-score.
+* **Visualization:** The system provides visualizations of the detected license plates and their corresponding recognized characters. 
+* **Error Analysis:** Common errors and their causes are analyzed to improve the system's performance.
+
+**Plots and images**
+![image](https://github.com/user-attachments/assets/f9fa9b11-c7da-4848-8205-53af0c931d4e)
+
+![image](https://github.com/user-attachments/assets/15bddcd8-f4e9-43c4-834f-db1d1e040a59)
+
+![image](https://github.com/user-attachments/assets/f06951b9-c4eb-41c3-94bd-c788ec0f6c24)
+
+### Recognition example
+![image](https://github.com/user-attachments/assets/5fa3170e-8c1b-41e3-b27f-f2020f2a3c15)
+
+Full model training process you can fing in this Python Notebook    
+
 ## Installation and Deployment
 
 This section contains the description of the different ways you can install and/or deploy the Imagine Parking
