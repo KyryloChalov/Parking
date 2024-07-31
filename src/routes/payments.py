@@ -13,12 +13,13 @@ from typing import Optional, List
 
 router = APIRouter(prefix="/payments", tags=["payments"])
 
+
 @router.post("/monthly_abonement")
 async def abonement_payment(
-    license_plate: str,
-    number_of_months:  int = Query(1, ge=1, le=12),
-    db: AsyncSession = Depends(get_db),
-    user: User = Depends(auth_service.get_current_user)
+        license_plate: str,
+        number_of_months: int = Query(1, ge=1, le=12),
+        db: AsyncSession = Depends(get_db),
+        user: User = Depends(auth_service.get_current_user)
 ):
     """
     Abonement payment
@@ -29,24 +30,32 @@ async def abonement_payment(
     :param user: User: Get the current user
     :return: A payment object
     """
-    
+
     if user.role != Role.admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail=messages.USER_NOT_HAVE_PERMISSIONS)
-    
+
     amount = await repositories_payments.calculate_monthly_fee(number_of_months, db)
 
-    payment_info = await repositories_payments.record_monthly_payment(license_plate, amount, user.id, number_of_months, db)
+    payment_info = await repositories_payments.record_monthly_payment(license_plate, amount, user.id, number_of_months,
+                                                                      db)
+
+    user_id = await repositories_payments.find_user_id_by_plate(license_plate, db)
+
+    if not user_id:
+        payment_info["message"] = messages.USER_NOT_FOUND + ", add this user"
+    else:
+        payment_info["user_id"] = user_id
 
     return payment_info
 
 
 @router.post("/{session_id}")
 async def post_payment(
-    session_id: int,
-    # amount: Optional[int] = None,
-    db: AsyncSession = Depends(get_db),
-    user: User = Depends(auth_service.get_current_user)
+        session_id: int,
+        # amount: Optional[int] = None,
+        db: AsyncSession = Depends(get_db),
+        user: User = Depends(auth_service.get_current_user)
 ):
     """
     Create a payment for a session
@@ -61,24 +70,23 @@ async def post_payment(
     if user.role != Role.admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail=messages.USER_NOT_HAVE_PERMISSIONS)
-    
+
     start_date, end_date = await repositories_payments.get_start_end_date_from_session(session_id, db)
 
-    
     if not start_date:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=messages.SESSION_NOT_FOUND)
-    
+
     if not end_date:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=messages.SESSION_NOT_CLOSED)
-    
+
     vehicle_id = await repositories_payments.get_vehicle_id_from_session(session_id, db)
-    
+
     end_abonement_date = await repositories_payments.get_end_date_payment_abonement(vehicle_id, db)
 
-    #license_plate = await repositories_payments.get_vehicle_id_from_session(vehicle_id, db)
-    
+    # license_plate = await repositories_payments.get_vehicle_id_from_session(vehicle_id, db)
+
     # Convert end_abonement_date and start_date to date objects (remove time)
     # end_abonement_date is date
     start_date_date = start_date.date()
@@ -99,9 +107,9 @@ async def post_payment(
             amount = 0
         elif start_date_date < end_abonement_date < end_date:
             amount = await repositories_payments.calculate_parking_fee(end_abonement_date, end_date, db)
-        
+
     if amount == 0:
-        payment_info =  {"message": "No need to pay", "abonement_active_till": end_abonement_date}
+        payment_info = {"message": "No need to pay", "abonement_active_till": end_abonement_date}
     else:
         payment_info = await repositories_payments.record_payment(session_id, amount, user.id, db)
 
@@ -110,9 +118,9 @@ async def post_payment(
 
 @router.get("/{license_plate}")
 async def get_last_10_payments(
-    license_plate: str,
-    db: AsyncSession = Depends(get_db),
-    user: User = Depends(auth_service.get_current_user)
+        license_plate: str,
+        db: AsyncSession = Depends(get_db),
+        user: User = Depends(auth_service.get_current_user)
 ):
     """
     Get list of last 10 payments for a vehicle
@@ -134,12 +142,12 @@ async def get_last_10_payments(
 
 @router.get("/calculate")
 async def calculate_payment(
-    start_time: datetime,
-    end_time: datetime,
-    icense_plate: Optional[str] = Query(
-        None, description="License plate of the vehicle"),
-    db: AsyncSession = Depends(get_db),
-    user: User = Depends(auth_service.get_current_user)
+        start_time: datetime,
+        end_time: datetime,
+        icense_plate: Optional[str] = Query(
+            None, description="License plate of the vehicle"),
+        db: AsyncSession = Depends(get_db),
+        user: User = Depends(auth_service.get_current_user)
 ):
     """
     Calculate the parking fee for a given time range
@@ -151,7 +159,7 @@ async def calculate_payment(
     :param user: User: Get the current user
     :return: The calculated parking fee
     """
-    
+
     if user.role != Role.admin and user.role != Role.user:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail=messages.USER_NOT_HAVE_PERMISSIONS)
