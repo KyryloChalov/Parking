@@ -100,7 +100,7 @@ app.include_router(payments.router, prefix="/api")
 app.include_router(rates.router, prefix="/api")
 app.include_router(settings.router, prefix="/api")
 app.include_router(utilities.router, prefix="/api")
-# app.include_router(seed.router, prefix="")
+app.include_router(seed.router, prefix="")
 
 
 # @app.get("/")
