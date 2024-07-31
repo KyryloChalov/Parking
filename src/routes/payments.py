@@ -140,7 +140,7 @@ async def get_last_10_payments(
     return payments
 
 
-@router.get("/calculate")
+@router.get("/{license_plate}/calculate")
 async def calculate_payment(
         start_time: datetime,
         end_time: datetime,
