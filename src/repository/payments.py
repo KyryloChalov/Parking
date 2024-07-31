@@ -33,6 +33,7 @@ async def find_vehicle_id_by_plate(license_plate: str, db: AsyncSession):
 
     return vehicle.id
 
+
 async def check_payment_exist(session_id: int, db: AsyncSession) -> bool:
     """
     Check if a parking session has a payment.
@@ -44,14 +45,14 @@ async def check_payment_exist(session_id: int, db: AsyncSession) -> bool:
 
     payment_stmt = select(Payment).filter_by(session_id=session_id)
     payment_result = await db.execute(payment_stmt)
-    
+
     # Check if any payment is found
     payment = payment_result.scalar_one_or_none()
 
     return payment is not None
 
 
-async def find_user_id_by_plate(license_plate: str, db: AsyncSession) -> int:
+async def find_user_id_by_plate(license_plate: str, db: AsyncSession) -> int | None:
     """
     Find the user ID by license plate.
     Raises an HTTPException if the vehicle is not found.
@@ -63,12 +64,8 @@ async def find_user_id_by_plate(license_plate: str, db: AsyncSession) -> int:
     query = select(Vehicle.owner_id).where(
         Vehicle.license_plate == license_plate)
     result = await db.execute(query)
-    user_id = result.scalar_one()
-    if not user_id:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=messages.VEHICLE_NOT_FOUND
-        )
-    
+    user_id = result.scalar_one_or_none()
+
     return user_id
 
 
@@ -86,6 +83,7 @@ async def get_vehicle_id_from_session(session_id: int, db: AsyncSession) -> int:
     vehicle_id = result.scalar_one()
     return vehicle_id
 
+
 async def get_start_end_date_from_session(session_id: int, db: AsyncSession) -> tuple:
     """
     Get the start and end dates from a parking session.
@@ -93,18 +91,18 @@ async def get_start_end_date_from_session(session_id: int, db: AsyncSession) -> 
     :param db: AsyncSession
     :return: tuple
     """
-    
+
     # session_id = int(session_id)
     stmt = select(Parking_session).where(Parking_session.id == session_id)
     result = await db.execute(stmt)
     session = result.scalar_one_or_none()
 
     if session is None:
-        #raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found.")
+        # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found.")
         return None, None
 
     start_date = session.created_at
-    end_date = session.updated_at # or start_date
+    end_date = session.updated_at  # or start_date
     return start_date, end_date
 
 
@@ -174,7 +172,7 @@ async def record_payment(session_id: int, amount: int, user_id: int, db: AsyncSe
             status_code=status.HTTP_404_NOT_FOUND,
             detail=messages.NO_SESSION_FOUND
         )
-    
+
     # Record the payment
     new_payment = await create_payment(
         user_id=user_id,
@@ -185,6 +183,7 @@ async def record_payment(session_id: int, amount: int, user_id: int, db: AsyncSe
     )
 
     return {"status": "success", "payment_id": new_payment.id, "amount": amount}
+
 
 async def get_end_date_payment_abonement(vehicle_id: int, db: AsyncSession):
     """
@@ -197,6 +196,7 @@ async def get_end_date_payment_abonement(vehicle_id: int, db: AsyncSession):
     stmt = select(Vehicle.ended_at).filter_by(id=vehicle_id)
     result = await db.execute(stmt)
     return result.scalar_one_or_none()
+
 
 async def update_end_date_payment_abonement(vehicle_id: int, new_end_date: datetime, db: AsyncSession):
     """
@@ -223,7 +223,8 @@ async def update_end_date_payment_abonement(vehicle_id: int, new_end_date: datet
         print(f"An error occurred while updating the vehicle's end date: {e}")
 
 
-async def record_monthly_payment(license_plate: str, amount: int, user_id: int, number_of_months: int, db: AsyncSession):
+async def record_monthly_payment(license_plate: str, amount: int, user_id: int, number_of_months: int,
+                                 db: AsyncSession):
     """
     Record a new monthly payment for a vehicle.
     :param license_plate: str
@@ -239,9 +240,9 @@ async def record_monthly_payment(license_plate: str, amount: int, user_id: int, 
     existing_end_date = await get_end_date_payment_abonement(vehicle_id, db)
 
     if existing_end_date:
-        last_day = existing_end_date + timedelta(days=DAYS_IN_MONTH*number_of_months)     
+        last_day = existing_end_date + timedelta(days=DAYS_IN_MONTH * number_of_months)
     else:
-        last_day = datetime.now() + timedelta(days=DAYS_IN_MONTH*number_of_months)
+        last_day = datetime.now() + timedelta(days=DAYS_IN_MONTH * number_of_months)
 
     await update_end_date_payment_abonement(vehicle_id, last_day, db)
 
@@ -281,7 +282,7 @@ async def get_last_payments(license_plate: str, db: AsyncSession):
             Payment.created_at.desc()).limit(10)
     )
     payments_result = await db.execute(payment_stmt)
-    
+
     return payments_result.scalars().all()
 
 
@@ -347,4 +348,3 @@ async def calculate_monthly_fee(months_number: int, db: AsyncSession):
     monthly_rate = await get_rate_by_name("monthly", db)
     fee = months_number * monthly_rate
     return fee
-
