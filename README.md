@@ -82,13 +82,20 @@ health checker endpoint to ensure the database's functionality.
 
 **Overview**
 
-This section details the implementation and performance of the plate number recognition system. The system leverages a combination of image processing techniques and a deep learning model to accurately identify and extract license plate numbers from images.
+This section details the implementation and performance of the plate number recognition system. The system leverages a
+combination of image processing techniques and a deep learning model to accurately identify and extract license plate
+numbers from images.
 
 **Model Architecture and Training**
 
-* **Model Architecture:** A Convolutional Neural Network (CNN) is employed for character recognition. The model consists of multiple convolutional layers followed by max pooling layers to extract relevant features. Fully connected layers classify the extracted features into corresponding characters.
-* **Training Data:** The model is trained on a custom dataset of license plate images and their corresponding character labels. Data augmentation techniques like rotation, scaling, and shearing are applied to increase the dataset's diversity and improve generalization.
-* **Training Process:** The model is trained using categorical cross-entropy loss and Adam optimizer. Early stopping is implemented to prevent overfitting.
+* **Model Architecture:** A Convolutional Neural Network (CNN) is employed for character recognition. The model consists
+  of multiple convolutional layers followed by max pooling layers to extract relevant features. Fully connected layers
+  classify the extracted features into corresponding characters.
+* **Training Data:** The model is trained on a custom dataset of license plate images and their corresponding character
+  labels. Data augmentation techniques like rotation, scaling, and shearing are applied to increase the dataset's
+  diversity and improve generalization.
+* **Training Process:** The model is trained using categorical cross-entropy loss and Adam optimizer. Early stopping is
+  implemented to prevent overfitting.
 
 ```bash
 Model: "sequential_4"
@@ -118,15 +125,21 @@ Model: "sequential_4"
 ```
 
 **Working in the App**
-1. **Image Preprocessing:** The input image is preprocessed to enhance the visibility of the license plate. This includes grayscale conversion, noise reduction, and edge detection.
+
+1. **Image Preprocessing:** The input image is preprocessed to enhance the visibility of the license plate. This
+   includes grayscale conversion, noise reduction, and edge detection.
 2. **Plate Detection:** Using Haar cascades, the system detects regions of interest that likely contain license plates.
 3. **Character Segmentation:** The detected plate region is segmented into individual characters.
-4. **Character Recognition:** Each segmented character is fed into the trained CNN model to predict its corresponding class.
+4. **Character Recognition:** Each segmented character is fed into the trained CNN model to predict its corresponding
+   class.
 5. **Plate Number Reconstruction:** The predicted characters are concatenated to form the final license plate number.
 
 **Accuracy and Results**
-* **Accuracy Metrics:** The model's performance is evaluated using metrics such as accuracy, precision, recall, and F1-score.
-* **Visualization:** The system provides visualizations of the detected license plates and their corresponding recognized characters. 
+
+* **Accuracy Metrics:** The model's performance is evaluated using metrics such as accuracy, precision, recall, and
+  F1-score.
+* **Visualization:** The system provides visualizations of the detected license plates and their corresponding
+  recognized characters.
 * **Error Analysis:** Common errors and their causes are analyzed to improve the system's performance.
 
 **Plots**
@@ -135,12 +148,12 @@ Model: "sequential_4"
 
 ![image](https://github.com/user-attachments/assets/15bddcd8-f4e9-43c4-834f-db1d1e040a59)
 
-
 ### Recognition example
 
 ![image](https://github.com/user-attachments/assets/5fa3170e-8c1b-41e3-b27f-f2020f2a3c15)
 
-The complete model training process can be found in this [Python Notebook](https://github.com/KyryloChalov/Parking/blob/dev/DS/notebook/model_ua_license_plate.ipynb)    
+The complete model training process can be found in
+this [Python Notebook](https://github.com/KyryloChalov/Parking/blob/dev/DS/notebook/model_ua_license_plate.ipynb)
 
 ## Installation and Deployment
 
@@ -239,18 +252,44 @@ Detailed instructions for each option follow:
    ```bash
    docker pull imagineteam/parkingapp
    ```
+3. **Start Docker Image (Two Methods):**
 
-3. **Start Docker Image**
+   **Method A: Using Docker Command Line**
+
+     ```bash
+     docker run --env-file .env imagineteam/parkingapp
+     ```
+
+   This command:
+
+    - Uses the `--env-file .env` flag to load environment variables from the `.env` file.
+    - Runs the `imagineteam/parkingapp` image.
+
+   **Method B: Using Docker Desktop (Optional Settings)**
+
+    1. Open Docker Desktop.
+    2. Click "Images" in the left sidebar.
+    3. Find the `imagineteam/parkingapp` image and click the "..." menu button.
+    4. Select "Run."
+    5. In the "Run image" window:
+        - Under "Ports," customize the port mapping if needed (e.g., `8000:8000`).
+        - Click "Advanced."
+        - In the "Environment" section, add environment variables following this format:
+          ```
+          VARIABLE_NAME=VARIABLE_VALUE
+          ```
+          (e.g., `PG_DB=postgres`)
+    6. Click "Run."
+
+4. **Open Application in Browser:**
 
    ```bash
-   docker compose up -d
-   
-   docker run --env-file .env imagineteam/parkingapp
+   http://localhost:<PORT_YOU_MAPPED>/docs/
    ```
 
-4. **Open Application in Browser**
+   **If you mapped port `8000` during Docker Desktop setup:**
 
-   ```bash
+   ```
    http://localhost:8000/docs/
    ```
 
