@@ -29,7 +29,7 @@ async def create_session(license_plate, db: AsyncSession):
     if not vehicle:
         vehicle = await add_vehicle_to_db_auto(license_plate, db)
 
-    stmt = select(Parking_session).where(Parking_session.vehicle_id == vehicle.id)
+    stmt = select(Parking_session).where(and_(Parking_session.vehicle_id == vehicle.id, Parking_session.updated_at==None))
     result = await db.execute(stmt)
     vehicle_in_parking = result.scalar_one_or_none()
     if vehicle_in_parking:

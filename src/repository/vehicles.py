@@ -299,7 +299,7 @@ async def get_all_vehicles_reminder(db: AsyncSession):
     result = await db.execute(stmt)
     setting = result.scalar_one_or_none()
     days_reminder = datetime.now().date() + timedelta(days=setting.num_days_reminder)
-
+    print(days_reminder)
     stmt = select(Vehicle).where(Vehicle.ended_at <= days_reminder)
     result = await db.execute(stmt)
     vehicles = result.scalars().all()
