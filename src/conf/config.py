@@ -1,8 +1,11 @@
+import warnings
+
 from typing import Any
 
 from pydantic import field_validator  # , EmailStr, ConfigDict
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
 class Settings(BaseSettings):
     PG_DB: str
