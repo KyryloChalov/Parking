@@ -37,6 +37,12 @@ NOT_NUMBER = [
     "RANGE",
     "ROVER",
     "KIA",
+    "TOYOTA",
+    "SIENN6CE",
+    "DA",
+    "LA",
+    "FIAT",
+    "61338",
 ]
 
 IMAGES = []

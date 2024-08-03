@@ -1,4 +1,5 @@
 import os
+import re
 
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
@@ -8,9 +9,9 @@ from matplotlib import pyplot as plt
 
 import cv2
 import numpy as np
-import re
+from paddleocr import PaddleOCR
 
-from src.conf.constants import IMAGES
+from src.conf.constants import IMAGES, NOT_NUMBER
 
 # from colors import YELLOW, BLUE, LIGHTBLUE, CYAN, GRAY, RESET
 
@@ -94,7 +95,6 @@ def detect_plate(img_, text=""):
         # малювання прямокутника по межі номера
         draw_number_border(plate_img, plate_rect)
         cv2.rectangle(plate_img, (x + 2, y), (x + w - 3, y + h - 5), (51, 181, 155), 3)
-        cv2.rectangle(plate_img, (x + 2, y), (x + w - 3, y + h - 5), (51, 181, 155), 3)
 
     # Додавання тексту
     if text != "":
@@ -112,6 +112,100 @@ def detect_plate(img_, text=""):
     # Повертаємо оброблене зображення з виділеними номерними знаками та область номерного знаку
     return plate_img, plate_, plate_rect
 
+def processing_number_text(result):
+    text_up = ""
+
+    for line in result:
+        
+        for word in line:
+
+            text_pred = word[1][0].strip().replace("\n", "").replace(" ", "")
+            if len(text_pred) == 8:
+                text_pred = correction_ua_number(text_pred)
+
+            if text_pred in NOT_NUMBER:
+                continue
+
+            # для американських номерів (в 2 ряди)
+            if re.match(r"^[A-Z0-9]{4}$", text_pred) and text_up == "":
+                text_up = text_pred
+                print(f"->> {text_up = }")
+                text_up_list = list(text_up)
+                for i in range(len(text_up_list)):
+                    text_up_list[i] = (
+                        text_up_list[i]
+                        .replace("1", "I")
+                        .replace("i", "I")
+                        .replace("|", "I")
+                        .replace("0", "O")
+                        .replace("7", "Z")
+                        .replace("8", "B")
+                        .replace("5", "B")
+                    )
+                text_up = "".join(text_up_list)
+                print(f"+>> {text_up = }")
+
+            elif re.match(r"^\d{4}$", text_pred) and re.match(r"^[A-Z]{4}$", text_up):
+                text_pred = text_up[:2] + text_pred + text_up[2:]
+                text_up = ""
+
+            output_text = text_pred
+            # print(f">-> {output_text = }")
+
+            if re.match(r"^[A-Z0-9]+$", output_text):
+                if validate_ukraine_plate(output_text):
+                    print(f"Detected License Plate: \033[33m{output_text}\033[0m")
+                else:
+                    print(f"-Invalid License Plate: \033[31m{output_text}\033[0m")
+                    # print(f">-- {output_text = }")
+        # print(f"--> {output_text = }")
+    return output_text
+
+# Initialize PaddleOCR with English language model
+ocr = PaddleOCR(
+    use_angle_cls=True,
+    lang="en",
+    use_gpu=True,
+    total_process_num=os.cpu_count() * 2 - 1,
+    show_log=False,
+)
+
+# Extract license plate text using PaddleOCR
+def extract_license_plate_text(image_path):
+
+    # OCR debug - сірим кольором
+    print("\033[90m", end="")
+    result = ocr.ocr(image_path)
+    print("\033[0m", end="")
+
+    return processing_number_text(result)
+
+# Not working now - detect_square _plate
+# def detect_square_plate(img, text=""):
+#     plate_img = img.copy()
+#     roi = img.copy()
+#     plate = None  # Initialize plate with a default value
+#     plate_rect = plate_cascade.detectMultiScale(
+#         plate_img, scaleFactor=1.6, minNeighbors=8
+#     )
+#     for x, y, w, h in plate_rect:
+#         plate = roi[y : y + h, x : x + w, :]
+#         cv2.rectangle(
+#             plate_img, (x - 15, y), (x + w - 3, y + h - 5), (179, 206, 226), 3
+#         )
+#     if text != "" and plate is not None:
+#         plate_img = cv2.putText(
+#             plate_img,
+#             text,
+#             (x - w // 2, y - h // 2),
+#             cv2.FONT_HERSHEY_COMPLEX_SMALL,
+#             0.5,
+#             (179, 206, 226),
+#             1,
+#             cv2.LINE_AA,
+#         )
+
+#     return plate_img, plate, plate_rect
 
 def find_contours(dimensions, img_, echo=True):
     """
@@ -406,6 +500,10 @@ def processing(photo, echo=True, log_on=False):
     except UnboundLocalError:
         output_img = car_photo_imread
         plate_number_ = "NOT RECOGNIZED"
+
+    if plate_number_ == "NOT RECOGNIZED":
+        plate_number_ = extract_license_plate_text(car_photo_imread) # ocr
+        print(f' OCR - {plate_number_}')
 
     plate_number_before_ua = plate_number_
     if len(plate_number_) == 8:
