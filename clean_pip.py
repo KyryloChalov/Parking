@@ -14,7 +14,7 @@ def run_command(command):
 for command in commands:
     run_command(command)
 # import pip
-# from subprocess import call
+from subprocess import call
 
 # for dist in pip.get_installed_distributions():
 #     call("pip uninstall -y " + dist.project_name, shell=True)
